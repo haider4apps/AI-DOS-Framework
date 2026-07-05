@@ -192,16 +192,20 @@ graph LR
 Every task — even a tiny text change — runs in an isolated `sandbox` branch. Main code is never touched until QC passes.
 
 ### 2. Hard Rollback
-If Guardian catches hallucination or QC issues Fatal Reject → Orchestrator deletes the sandbox branch. Project returns to pristine state.
+If Guardian catches hallucination or QC issues Fatal Reject → Orchestrator deletes the sandbox branch.
 
-### 3. Feedback Loop (Iterative Self-Correction)
-QC or Reviewer doesn't reject the ENTIRE task. They generate a **Fix Report** specifying exactly what's wrong and which agent caused it. Orchestrator routes it back to that specific agent only. Hard Rollback only triggers after 3 failed attempts.
+## The Problem: The Hallucination of Markdown "Rules"
+Initially, AI-DOS relied purely on Markdown prose (v3.0). We realized that giving AI agents a Markdown file full of rules and hoping they follow them is like giving a driver a map and hoping they never break the speed limit. AIs hallucinate. They skip steps. They forget the context. They write to the wrong files.
+Prose-based multi-agent systems are fundamentally unstable for enterprise software.
 
-### 4. Internal Escalation (No User Disturbance)
-Confused agents ask the **Librarian** for more context — NOT the user. User is only queried by PM at the very start if the prompt is incomplete.
+## The Solution: AI-DOS 4.0 Enterprise Control Plane
+AI-DOS 4.0 shifts the paradigm from "Prose Policies" to "Machine-Enforced State".
+Instead of relying on agents to self-regulate, AI-DOS uses a rigid **Finite State Machine (`state_machine.yaml`)** and strictly typed **JSON Schemas**.
 
-### 5. Discussion Mode (Human Approval Gate)
-For Medium+ tasks, execution is locked until user approves the Architect's impact analysis. No code is written without a mutually agreed foolproof plan.
+**The Golden Rule:** Agents may *propose* ideas and code by outputting JSON artifacts, but ONLY the Orchestrator may transition the system state. No state can be skipped. No code can be written without an active Execution Lease (Lock).
+
+## Phase 0: The Business Gate
+Before a single line of code is written, AI-DOS introduces a mandatory Phase 0. An idea starts in `FEASIBILITY_PENDING`. The Business Strategist agent must conduct market research and generate structured `market_scan` and `business_feasibility_report` schemas. If the Orchestrator evaluates the Go/No-Go decision as a 'Go', the idea is formally admitted into the execution lifecycle. agreed foolproof plan.
 
 ### 6. Cherry-Picking & Partial Rollback
 Memory Cards store exact file changes per task. User can say "undo Task 506" or "revert login buttons to 4 weeks ago" and AI will surgically revert only those specific changes.

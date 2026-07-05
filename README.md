@@ -22,4 +22,4 @@ Scan the root directory for dependency files ([List expected dependency files ba
 
 ## Step 5: Handover to Phase 0 (AI-DOS Core)
 Once Steps 1-4 are successfully completed, tell the user: *"Setup 100% complete! Welcome to AI-DOS."*
-Then, immediately read `.ai_framework/ai_docs/global/00_MASTER.md` to load the full system context, and initiate **Phase 0 (Discovery & Onboarding)** by asking the user if they want to build a new project or scan the existing one.
+Then, immediately read `.ai_framework/ai_docs/global/00_MASTER.md` to load the full system context, and initiate **Phase 0 (Discovery & Onboarding)** by placing the system in the `FEASIBILITY_PENDING` state and calling the Business Strategist.
