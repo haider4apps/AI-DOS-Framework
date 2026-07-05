@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "uvp_canvas",
+  "canvas_id": "UVP-2026-07-05-001",
+  "created_at": "2026-07-05T10:35:00Z",
+  "created_by": "business_strategist",
+  "initiative_name": "AI-DOS Control Plane Commercialization",
+  "target_customer": "Enterprise engineering leaders adopting multiple AI agents in delivery workflows",
+  "core_problem": "AI-assisted software delivery becomes risky and hard to govern when approvals, audit trails, and task-state controls are inconsistent.",
+  "current_alternatives": [
+    "Manual review and approval processes",
+    "Generic CI/CD gates",
+    "Custom internal orchestration scripts"
+  ],
+  "proposed_solution": "A governed AI delivery control plane with explicit state transitions, approval gates, artifact validation, and rollback discipline.",
+  "value_drivers": [
+    {
+      "driver": "Governance",
+      "customer_outcome": "Reduce uncontrolled AI-driven delivery risk",
+      "importance": "high"
+    },
+    {
+      "driver": "Auditability",
+      "customer_outcome": "Create verifiable evidence for approvals and release actions",
+      "importance": "high"
+    },
+    {
+      "driver": "Operational consistency",
+      "customer_outcome": "Standardize multi-agent execution across teams",
+      "importance": "medium"
+    }
+  ],
+  "differentiators": [
+    {
+      "claim": "Machine-enforced delivery governance",
+      "against": "Generic AI copilots",
+      "defensibility": "strong"
+    },
+    {
+      "claim": "Reusable control-plane primitives instead of brittle custom workflows",
+      "against": "Internal platform tooling",
+      "defensibility": "moderate"
+    }
+  ],
+  "proof_points": [
+    "Explicit state machine with approval and rollback semantics",
+    "Artifact-level schema validation",
+    "Structured audit trail for governance-critical transitions"
+  ],
+  "draft_uvp_statement": "AI-DOS helps enterprise engineering teams govern AI-assisted delivery with machine-enforced approvals, validated artifacts, and auditable state transitions that reduce operational risk."
+}

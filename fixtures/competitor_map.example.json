@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "competitor_map",
+  "map_id": "CM-2026-07-05-001",
+  "created_at": "2026-07-05T10:20:00Z",
+  "created_by": "business_strategist",
+  "initiative_name": "AI-DOS Control Plane Commercialization",
+  "evaluation_criteria": [
+    "Governance depth",
+    "Auditability",
+    "Ease of adoption",
+    "Enterprise readiness"
+  ],
+  "competitors": [
+    {
+      "name": "Generic AI coding copilots",
+      "category": "indirect",
+      "target_segment": "Software development teams",
+      "pricing_model": "Seat-based subscription",
+      "distribution_motion": "Product-led and enterprise expansion",
+      "strengths": [
+        "High awareness",
+        "Fast onboarding",
+        "Strong developer utility"
+      ],
+      "weaknesses": [
+        "Limited workflow governance",
+        "Weak audit trail semantics",
+        "Not positioned as a control plane"
+      ],
+      "threat_level": "medium",
+      "positioning_gap": "AI-DOS can differentiate on policy-bound orchestration and machine-enforced lifecycle governance."
+    },
+    {
+      "name": "Internal workflow tooling",
+      "category": "internal_alternative",
+      "target_segment": "Large engineering organizations",
+      "pricing_model": "Internal sunk cost",
+      "distribution_motion": "Internal platform adoption",
+      "strengths": [
+        "Low procurement friction",
+        "Can be tailored to existing processes"
+      ],
+      "weaknesses": [
+        "Hard to standardize",
+        "Maintenance burden compounds over time",
+        "Often lacks product-grade governance consistency"
+      ],
+      "threat_level": "high",
+      "positioning_gap": "AI-DOS can replace brittle custom workflow logic with reusable governance primitives."
+    }
+  ],
+  "strategic_takeaways": [
+    "The strongest wedge is governed orchestration rather than generic AI productivity.",
+    "Internal alternatives are a major obstacle and must be outcompeted on speed to value and operational discipline.",
+    "Enterprise positioning should emphasize policy control, approvals, and auditability."
+  ]
+}

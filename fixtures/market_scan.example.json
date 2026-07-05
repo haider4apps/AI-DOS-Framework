@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "market_scan",
+  "scan_id": "MS-2026-07-05-001",
+  "created_at": "2026-07-05T10:00:00Z",
+  "created_by": "business_strategist",
+  "initiative_name": "AI-DOS Control Plane Commercialization",
+  "problem_domain": "Enterprise governance and control for AI-assisted software delivery workflows.",
+  "target_geographies": ["US", "EU"],
+  "target_segments": [
+    {
+      "segment_name": "Enterprise engineering leadership",
+      "pain_severity": "high",
+      "buyer_type": "Executive technical buyer",
+      "urgency_drivers": [
+        "AI adoption in production engineering",
+        "Audit and approval requirements",
+        "Need for risk-managed automation"
+      ]
+    }
+  ],
+  "demand_signals": [
+    {
+      "signal": "Growing enterprise concern about unmanaged AI changes in delivery pipelines.",
+      "signal_type": "buyer_feedback",
+      "strength": "strong",
+      "evidence_note": "Repeated governance concerns appear in engineering-lead conversations."
+    }
+  ],
+  "market_trends": [
+    {
+      "trend": "AI-assisted engineering adoption is expanding into production-affecting workflows.",
+      "direction": "accelerating",
+      "relevance": "high",
+      "impact_note": "Governance and audit needs increase as deployment scope broadens."
+    }
+  ],
+  "tam_sam_som": {
+    "tam_estimate": 2500000000,
+    "sam_estimate": 450000000,
+    "som_estimate": 35000000,
+    "currency": "USD",
+    "estimation_note": "Illustrative top-down estimate for governed AI delivery software in target segments."
+  },
+  "opportunity_summary": "There is a credible emerging opportunity for governed AI-delivery infrastructure aimed at organizations that value auditability, policy control, and operational discipline over pure generation speed.",
+  "confidence": "medium"
+}

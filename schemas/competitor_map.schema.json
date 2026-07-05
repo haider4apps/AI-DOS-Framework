@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/competitor_map.schema.json",
+  "title": "Competitor Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "map_id",
+    "created_at",
+    "created_by",
+    "initiative_name",
+    "evaluation_criteria",
+    "competitors",
+    "strategic_takeaways"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$"
+    },
+    "artifact_type": {
+      "const": "competitor_map"
+    },
+    "map_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initiative_name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "evaluation_criteria": {
+      "type": "array",
+      "minItems": 3,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "competitors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "category",
+          "target_segment",
+          "pricing_model",
+          "strengths",
+          "weaknesses",
+          "threat_level",
+          "positioning_gap"
+        ],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "enum": ["direct", "indirect", "substitute", "internal_alternative"]
+          },
+          "target_segment": { "type": "string", "minLength": 2 },
+          "pricing_model": { "type": "string", "minLength": 2 },
+          "distribution_motion": { "type": "string" },
+          "strengths": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 3 }
+          },
+          "weaknesses": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 3 }
+          },
+          "threat_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          },
+          "positioning_gap": {
+            "type": "string",
+            "minLength": 5
+          },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "strategic_takeaways": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 5 }
+    }
+  }
+}

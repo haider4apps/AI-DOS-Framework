@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.1",
+  "artifact_type": "business_feasibility_note",
+  "report_id": "",
+  "created_at": "yesterday",
+  "created_by": 42,
+  "initiative_name": "AI",
+  "opportunity_statement": "Too short.",
+  "analysis_scope": {
+    "geographies": "US",
+    "time_horizon_months": 0,
+    "primary_segment": "",
+    "pricing_currency": "usd"
+  },
+  "evidence_sources": [],
+  "customer_segments": [
+    {
+      "segment_name": "Enterprise",
+      "user_persona": "VP Engineering",
+      "buyer_persona": "CTO",
+      "pain_points": "Uncontrolled AI changes",
+      "willingness_to_pay_signal": "very_strong",
+      "access_difficulty": 1
+    }
+  ],
+  "competitor_landscape": [
+    {
+      "name": "Generic copilots",
+      "category": "adjacent",
+      "strengths": "Fast generation",
+      "weaknesses": ["Weak governance"],
+      "positioning_gap": "gap"
+    }
+  ],
+  "uvp": {
+    "statement": "Short statement",
+    "target_customer": "",
+    "differentiators": []
+  },
+  "monetization_strategy": {
+    "revenue_model": "ads",
+    "pricing_hypothesis": "short",
+    "sales_motion": "viral",
+    "acquisition_channels": []
+  },
+  "financial_feasibility": {
+    "estimated_build_cost": -100,
+    "estimated_gtm_cost": -50,
+    "estimated_monthly_opex": -1,
+    "expected_gross_margin_pct": 140,
+    "break_even_months": -3,
+    "profitability_outlook": "guaranteed"
+  },
+  "strategic_risks": [],
+  "assumptions": [],
+  "recommendation": {
+    "recommended_mvp_scope": [],
+    "go_to_market_next_steps": "Talk to customers",
+    "decision_outcome": "maybe",
+    "decision_rationale": "too short",
+    "confidence": "certain"
+  }
+}

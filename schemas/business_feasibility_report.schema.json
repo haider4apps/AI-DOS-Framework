@@ -1,0 +1,370 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/business_feasibility_report.schema.json",
+  "title": "Business Feasibility Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "report_id",
+    "created_at",
+    "created_by",
+    "initiative_name",
+    "opportunity_statement",
+    "analysis_scope",
+    "evidence_sources",
+    "customer_segments",
+    "competitor_landscape",
+    "uvp",
+    "monetization_strategy",
+    "financial_feasibility",
+    "strategic_risks",
+    "assumptions",
+    "recommendation"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$"
+    },
+    "artifact_type": {
+      "const": "business_feasibility_report"
+    },
+    "report_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initiative_name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "opportunity_statement": {
+      "type": "string",
+      "minLength": 20
+    },
+    "analysis_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "geographies",
+        "time_horizon_months",
+        "primary_segment",
+        "pricing_currency"
+      ],
+      "properties": {
+        "geographies": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "time_horizon_months": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "primary_segment": {
+          "type": "string",
+          "minLength": 2
+        },
+        "secondary_segments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "pricing_currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "evidence_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_type", "summary", "confidence"],
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "user_interview",
+              "market_report",
+              "competitive_scan",
+              "internal_data",
+              "expert_input",
+              "pricing_test",
+              "desk_research"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 10
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          }
+        }
+      }
+    },
+    "customer_segments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "segment_name",
+          "user_persona",
+          "buyer_persona",
+          "pain_points",
+          "willingness_to_pay_signal",
+          "access_difficulty"
+        ],
+        "properties": {
+          "segment_name": { "type": "string", "minLength": 2 },
+          "user_persona": { "type": "string", "minLength": 2 },
+          "buyer_persona": { "type": "string", "minLength": 2 },
+          "pain_points": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 3 }
+          },
+          "current_alternatives": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "willingness_to_pay_signal": {
+            "type": "string",
+            "enum": ["weak", "moderate", "strong"]
+          },
+          "access_difficulty": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          }
+        }
+      }
+    },
+    "competitor_landscape": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "category",
+          "strengths",
+          "weaknesses",
+          "positioning_gap"
+        ],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "enum": ["direct", "indirect", "substitute", "incumbent_internal"]
+          },
+          "strengths": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "weaknesses": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "positioning_gap": {
+            "type": "string",
+            "minLength": 5
+          }
+        }
+      }
+    },
+    "uvp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "target_customer", "differentiators"],
+      "properties": {
+        "statement": { "type": "string", "minLength": 20 },
+        "target_customer": { "type": "string", "minLength": 2 },
+        "differentiators": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "switching_trigger": {
+          "type": "string"
+        }
+      }
+    },
+    "monetization_strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revenue_model",
+        "pricing_hypothesis",
+        "sales_motion",
+        "acquisition_channels"
+      ],
+      "properties": {
+        "revenue_model": {
+          "type": "string",
+          "enum": [
+            "subscription",
+            "usage_based",
+            "transactional",
+            "services",
+            "hybrid",
+            "licensing",
+            "marketplace"
+          ]
+        },
+        "pricing_hypothesis": {
+          "type": "string",
+          "minLength": 10
+        },
+        "sales_motion": {
+          "type": "string",
+          "enum": [
+            "plg",
+            "sales_assisted",
+            "enterprise_sales",
+            "partner_led",
+            "founder_led",
+            "outbound"
+          ]
+        },
+        "acquisition_channels": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 2 }
+        },
+        "expansion_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "financial_feasibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "estimated_build_cost",
+        "estimated_gtm_cost",
+        "estimated_monthly_opex",
+        "expected_gross_margin_pct",
+        "break_even_months",
+        "profitability_outlook"
+      ],
+      "properties": {
+        "estimated_build_cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "estimated_gtm_cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "estimated_monthly_opex": {
+          "type": "number",
+          "minimum": 0
+        },
+        "expected_gross_margin_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "break_even_months": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "profitability_outlook": {
+          "type": "string",
+          "enum": ["attractive", "uncertain", "unattractive"]
+        },
+        "key_cost_drivers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "strategic_risks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["risk", "severity", "mitigation"],
+        "properties": {
+          "risk": { "type": "string", "minLength": 5 },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "mitigation": { "type": "string", "minLength": 5 }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 5 }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommended_mvp_scope",
+        "go_to_market_next_steps",
+        "decision_outcome",
+        "decision_rationale",
+        "confidence"
+      ],
+      "properties": {
+        "recommended_mvp_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "go_to_market_next_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "decision_outcome": {
+          "type": "string",
+          "enum": ["go", "conditional_go", "defer", "no_go"]
+        },
+        "decision_rationale": {
+          "type": "string",
+          "minLength": 20
+        },
+        "conditions_to_clear": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 3 }
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["low", "medium", "high"]
+        }
+      }
+    }
+  }
+}

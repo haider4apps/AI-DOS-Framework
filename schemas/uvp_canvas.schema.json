@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/uvp_canvas.schema.json",
+  "title": "UVP Canvas",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "canvas_id",
+    "created_at",
+    "created_by",
+    "initiative_name",
+    "target_customer",
+    "core_problem",
+    "current_alternatives",
+    "proposed_solution",
+    "value_drivers",
+    "differentiators",
+    "proof_points",
+    "draft_uvp_statement"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$"
+    },
+    "artifact_type": {
+      "const": "uvp_canvas"
+    },
+    "canvas_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initiative_name": {
+      "type": "string",
+      "minLength": 3
+    },
+    "target_customer": {
+      "type": "string",
+      "minLength": 2
+    },
+    "core_problem": {
+      "type": "string",
+      "minLength": 10
+    },
+    "current_alternatives": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 2 }
+    },
+    "proposed_solution": {
+      "type": "string",
+      "minLength": 10
+    },
+    "value_drivers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["driver", "customer_outcome"],
+        "properties": {
+          "driver": { "type": "string", "minLength": 3 },
+          "customer_outcome": { "type": "string", "minLength": 5 },
+          "importance": {
+            "type": "string",
+            "enum": ["low", "medium", "high"]
+          }
+        }
+      }
+    },
+    "differentiators": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "against", "defensibility"],
+        "properties": {
+          "claim": { "type": "string", "minLength": 5 },
+          "against": { "type": "string", "minLength": 2 },
+          "defensibility": {
+            "type": "string",
+            "enum": ["weak", "moderate", "strong"]
+          }
+        }
+      }
+    },
+    "proof_points": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 5 }
+    },
+    "draft_uvp_statement": {
+      "type": "string",
+      "minLength": 20
+    }
+  }
+}

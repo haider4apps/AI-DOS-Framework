@@ -1,9 +1,10 @@
 version: 1
 name: ai_dos_control_plane
 spec_version: 2026-07-05
+initial_state: FEASIBILITY_PENDING
 
 metadata:
-  description: Executable state machine draft for the AI-DOS control plane
+  description: Executable state machine draft for the AI-DOS control plane with Phase 0 business feasibility gating
   orchestrator_rule: Only the orchestrator may mutate task state
   approval_scope_binding: true
   artifact_validation_required: true
@@ -17,6 +18,9 @@ terminal_states:
   - QUARANTINED
 
 states:
+  - FEASIBILITY_PENDING
+  - FEASIBILITY_APPROVED
+  - FEASIBILITY_DEFERRED
   - DRAFT
   - CLASSIFIED
   - CONTEXT_PENDING
@@ -54,6 +58,8 @@ states:
 invariants:
   single_current_state: true
   valid_artifact_schema_required: true
+  business_feasibility_required_before_draft: true
+  only_approved_feasibility_may_enter_draft: true
   active_lease_required_for_implementation: true
   qc_pass_required_before_merge: true
   medium_or_higher_requires_approval: true
@@ -89,6 +95,14 @@ transition_defaults:
   require_artifact_ids: true
 
 guards:
+  valid_business_feasibility_report:
+    description: BusinessFeasibilityReport exists and validates against schema
+  feasibility_go_or_conditional_go:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is go or conditional_go
+  feasibility_deferred:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is defer
+  feasibility_no_go:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is no_go
   valid_task_manifest:
     description: TaskManifest exists and validates against schema
   valid_classification_report:
@@ -141,6 +155,54 @@ guards:
     description: Docs sync is required for merged tasks
 
 transitions:
+  - from: FEASIBILITY_PENDING
+    event: approve_feasibility
+    actor: orchestrator
+    required_artifacts:
+      - BusinessFeasibilityReport
+    guards:
+      - valid_business_feasibility_report
+      - feasibility_go_or_conditional_go
+    to: FEASIBILITY_APPROVED
+
+  - from: FEASIBILITY_PENDING
+    event: defer_feasibility
+    actor: orchestrator
+    required_artifacts:
+      - BusinessFeasibilityReport
+    guards:
+      - valid_business_feasibility_report
+      - feasibility_deferred
+    to: FEASIBILITY_DEFERRED
+
+  - from: FEASIBILITY_PENDING
+    event: reject_feasibility
+    actor: orchestrator
+    required_artifacts:
+      - BusinessFeasibilityReport
+    guards:
+      - valid_business_feasibility_report
+      - feasibility_no_go
+    to: REJECTED
+
+  - from: FEASIBILITY_DEFERRED
+    event: resume_feasibility
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: FEASIBILITY_PENDING
+
+  - from: FEASIBILITY_APPROVED
+    event: admit_to_intake
+    actor: orchestrator
+    required_artifacts:
+      - BusinessFeasibilityReport
+      - TaskManifest
+    guards:
+      - valid_business_feasibility_report
+      - valid_task_manifest
+    to: DRAFT
+
   - from: DRAFT
     event: classify_task
     actor: orchestrator
@@ -493,6 +555,20 @@ transitions:
       - RollbackRecord
     guards: []
     to: ROLLED_BACK
+
+  - from: FEASIBILITY_PENDING
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
+
+  - from: FEASIBILITY_DEFERRED
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
 
   - from: DRAFT
     event: abort
