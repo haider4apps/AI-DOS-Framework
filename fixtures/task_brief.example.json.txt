@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "task_brief",
+  "task_id": "TASK-2026-07-04-001",
+  "brief_id": "BRIEF-001",
+  "prepared_at": "2026-07-04T14:05:02Z",
+  "prepared_by": "coordinator",
+  "problem_statement": "AI-DOS currently exists as a prose constitution and needs executable control-plane semantics.",
+  "objectives": [
+    "Define lifecycle states and guarded transitions",
+    "Formalize artifact contracts for validation",
+    "Provide testable examples and an operational walkthrough"
+  ],
+  "scope_in": [
+    "Task lifecycle state machine",
+    "Artifact schema pack",
+    "Examples and walkthrough"
+  ],
+  "scope_out": [
+    "Implementation code for the control plane",
+    "Persistent storage design",
+    "UI design"
+  ],
+  "assumptions": [
+    "A central orchestrator validates artifacts",
+    "Agents emit structured JSON outputs",
+    "Failure handling is explicit and stateful"
+  ],
+  "risks": [
+    {
+      "risk": "Schema drift between agents and validator",
+      "impact": "high",
+      "mitigation": "Version artifacts and validate on every transition"
+    },
+    {
+      "risk": "Ambiguous ownership across handoffs",
+      "impact": "medium",
+      "mitigation": "Require explicit assignee and handoff packet"
+    }
+  ],
+  "definition_of_done": [
+    "All required artifacts have schemas",
+    "Examples validate structurally",
+    "Walkthrough covers success and failure touchpoints"
+  ]
+}

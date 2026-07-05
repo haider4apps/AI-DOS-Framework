@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "tool_invocation_record",
+  "task_id": "TASK-2026-07-04-001",
+  "invocation_id": "TOOL-001",
+  "timestamp": "2026-07-04T15:12:05Z",
+  "agent_id": "agent-architect-01",
+  "tool_name": "schema_validator",
+  "operation": "validate_pack",
+  "inputs": [
+    "schema_pack_ref",
+    "ART-002"
+  ],
+  "outputs": {
+    "valid": "true",
+    "validated_schema_count": "11",
+    "warnings": "none"
+  },
+  "duration_ms": "842",
+  "status": 200
+}

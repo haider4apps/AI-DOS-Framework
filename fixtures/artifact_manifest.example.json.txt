@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "artifact_manifest",
+  "task_id": "TASK-2026-07-04-001",
+  "manifest_id": "MANIFEST-001",
+  "generated_at": "2026-07-04T15:10:44Z",
+  "generated_by": "architect",
+  "artifacts": [
+    {
+      "artifact_id": "ART-001",
+      "name": "ai-dos-state-machine.yaml",
+      "type": "state_machine",
+      "version": "1.0.0",
+      "status": "draft",
+      "checksum": "sha256:1d2f6bb0abc123example",
+      "produced_by": "agent-architect-01"
+    },
+    {
+      "artifact_id": "ART-002",
+      "name": "ai-dos-schema-pack.json",
+      "type": "schema_pack",
+      "version": "1.0.0",
+      "status": "draft",
+      "checksum": "sha256:9a73ee19def456example",
+      "produced_by": "agent-architect-01"
+    }
+  ],
+  "required_missing": [
+    "example_set",
+    "walkthrough"
+  ],
+  "ready_for_review": true
+}

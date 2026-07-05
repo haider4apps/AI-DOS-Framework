@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "task_intake",
+  "task_id": "TASK-2026-07-04-001",
+  "received_at": "2026-07-04T14:03:11Z",
+  "requestor": {
+    "id": "user-42",
+    "role": "product_owner",
+    "channel": "chat"
+  },
+  "priority": "high",
+  "title": "Create AI-DOS executable spec",
+  "goal": "Turn the markdown constitution into a machine-enforced orchestration system.",
+  "request_text": "Create a formal state machine and schema pack for AI-DOS. Then provide concrete examples and a walkthrough.",
+  "constraints": [
+    "State transitions must be machine-verifiable",
+    "Artifacts must validate via JSON Schema",
+    "Outputs should be suitable for control-plane enforcement"
+  ],
+  "acceptance_criteria": [
+    "State machine defines canonical transitions",
+    "Schema pack covers core orchestration artifacts",
+    "Examples exist for every schema",
+    "One end-to-end walkthrough demonstrates execution"
+  ],
+  "attachments": [],
+  "tags": [
+    "orchestration",
+    "schema",
+    "state-machine",
+    "governance"
+  ]
+}

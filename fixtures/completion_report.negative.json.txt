@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "completion_report",
+  "task_id": "TASK-2026-07-04-001",
+  "report_id": "COMPLETE-001",
+  "completed_at": "2026-07-04T16:20:49Z",
+  "completed_by": "operator",
+  "outcome": [
+    "success"
+  ],
+  "delivered_artifacts": "ai-dos-state-machine.yaml",
+  "acceptance_results": [
+    {
+      "criterion": "State machine defines canonical transitions",
+      "result": "met",
+      "extra": {
+        "unexpected": true
+      }
+    }
+  ],
+  "known_limitations": {},
+  "next_recommended_actions": "Validate all examples against the canonical schema pack"
+}

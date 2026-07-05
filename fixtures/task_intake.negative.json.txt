@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "task_intake",
+  "received_at": "not-a-timestamp",
+  "requestor": {
+    "id": "user-42",
+    "role": "product_owner",
+    "channel": "chat"
+  },
+  "priority": 7,
+  "title": "Create AI-DOS executable spec",
+  "goal": "Turn the markdown constitution into a machine-enforced orchestration system.",
+  "request_text": "Create a formal state machine and schema pack for AI-DOS.",
+  "constraints": [
+    "State transitions must be machine-verifiable"
+  ],
+  "acceptance_criteria": "Examples exist for every schema",
+  "attachments": [],
+  "tags": [
+    "orchestration"
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "handoff_packet",
+  "task_id": "TASK-2026-07-04-001",
+  "handoff_id": "HANDOFF-001",
+  "created_at": "2026-07-04T15:45:33Z",
+  "from_agent": "agent-architect-01",
+  "to_agent": "agent-technical-writer-01",
+  "purpose": "Transfer validated schema context so examples and walkthrough can be authored consistently.",
+  "context_summary": "State machine and schema pack are approved at CP-1; remaining work is example generation and narrative walkthrough.",
+  "artifacts_included": [
+    "ART-001",
+    "ART-002",
+    "REVIEW-001"
+  ],
+  "open_issues": [
+    "ISSUE-001"
+  ],
+  "recipient_expectations": [
+    "Produce one example per schema",
+    "Use only canonical artifact names",
+    "Resolve the naming issue before final completion"
+  ]
+}

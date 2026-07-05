@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "work_order",
+  "task_id": "TASK-2026-07-04-001",
+  "work_order_id": "WO-001",
+  "issued_at": "2026-07-04T14:09:21Z",
+  "issued_by": "coordinator",
+  "target_agent_id": "agent-architect-01",
+  "objective": "Produce the first-draft state machine YAML and schema pack outline.",
+  "instructions": [
+    "Use canonical state names only",
+    "Attach guards and required artifacts to each transition",
+    "Mark failure paths explicitly"
+  ],
+  "required_inputs": [
+    {
+      "name": "task_brief",
+      "ref": "BRIEF-001"
+    }
+  ],
+  "required_outputs": [
+    "state_machine",
+    "schema_pack_outline"
+  ],
+  "quality_bar": {
+    "validation_required": true,
+    "review_level": "peer",
+    "must_include_examples": false
+  }
+}

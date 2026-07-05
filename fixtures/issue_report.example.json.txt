@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "issue_report",
+  "task_id": "TASK-2026-07-04-001",
+  "issue_id": "ISSUE-001",
+  "reported_at": "2026-07-04T15:42:11Z",
+  "reported_by": "validator",
+  "severity": "medium",
+  "category": "schema_consistency",
+  "summary": "Example set references an artifact name not present in the schema pack.",
+  "details": "The example walkthrough uses 'review_packet' while the canonical schema name is 'checkpoint_review'.",
+  "affected_artifacts": [
+    "examples.md",
+    "schema_pack.json"
+  ],
+  "recommended_action": "Rename the example artifact to the canonical schema name and revalidate.",
+  "status": "open"
+}

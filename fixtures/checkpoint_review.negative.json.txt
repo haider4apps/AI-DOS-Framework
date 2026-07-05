@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "checkpoint_review",
+  "task_id": "TASK-2026-07-04-001",
+  "review_id": "REVIEW-001",
+  "checkpoint_id": "CP-1",
+  "reviewed_at": "2026-07-04T15:30:17Z",
+  "reviewed_by": "reviewer",
+  "criteria": "Lifecycle states are canonical and closed",
+  "findings": [
+    {
+      "criterion": "Transitions have guards",
+      "result": true
+    }
+  ],
+  "decision": 1,
+  "follow_up_actions": {}
+}

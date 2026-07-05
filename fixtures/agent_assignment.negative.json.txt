@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "agent_assignment",
+  "task_id": "TASK-2026-07-04-001",
+  "assignment_id": "ASG-001",
+  "assigned_at": "2026-07-04T14:08:03Z",
+  "assigned_by": "coordinator",
+  "agent": {
+    "agent_id": 101,
+    "role": "architect",
+    "capabilities": "state-modeling"
+  },
+  "responsibilities": [
+    "Define canonical states"
+  ],
+  "inputs": [
+    "task_brief"
+  ],
+  "outputs_required": [
+    "execution_plan"
+  ],
+  "sla": {
+    "start_by": "yesterday",
+    "complete_by": false
+  },
+  "escalation_path": "coordinator"
+}
