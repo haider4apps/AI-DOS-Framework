@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/classification-report.schema.json",
+  "title": "ClassificationReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "task_type",
+    "risk_tier",
+    "risk_score",
+    "requires_approval",
+    "reasons",
+    "mandatory_gates"
+  ],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "task_type": {"type": "string", "enum": ["bugfix", "feature", "refactor", "docs", "ops", "security", "research", "migration"]},
+    "risk_tier": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+    "risk_score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "requires_approval": {"type": "boolean"},
+    "reasons": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "weight"],
+        "properties": {
+          "code": {"type": "string", "minLength": 2, "maxLength": 100},
+          "weight": {"type": "integer", "minimum": 0, "maximum": 100},
+          "detail": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "mandatory_gates": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "enum": ["approval", "review", "security", "test", "qc", "release_review"]}
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"risk_tier": {"enum": ["medium", "high", "critical"]}}},
+      "then": {"properties": {"requires_approval": {"const": true}}}
+    },
+    {
+      "if": {"properties": {"risk_tier": {"const": "low"}}},
+      "then": {"properties": {"requires_approval": {"const": false}}}
+    }
+  ]
+}

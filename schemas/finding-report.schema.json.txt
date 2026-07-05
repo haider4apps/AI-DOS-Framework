@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/finding-report.schema.json",
+  "title": "FindingReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "report_id", "stage", "status", "findings"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "report_id": {"type": "string", "pattern": "^(REV|SEC|QC)-[0-9]{6}-[0-9]{2}$"},
+    "stage": {"type": "string", "enum": ["review", "security", "qc"]},
+    "status": {"type": "string", "enum": ["pass", "fail"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["defect_id", "severity", "category", "summary", "evidence", "required_action", "owner_agent"],
+        "properties": {
+          "defect_id": {"type": "string", "pattern": "^[A-Z0-9_-]{4,100}$"},
+          "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+          "category": {"type": "string", "enum": ["logic_gap", "security_gap", "test_regression", "scope_violation", "context_conflict", "merge_conflict", "quality_gap"]},
+          "summary": {"type": "string", "minLength": 3, "maxLength": 1000},
+          "evidence": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+          "required_action": {"type": "string", "minLength": 3, "maxLength": 1000},
+          "owner_agent": {"type": "string", "minLength": 1, "maxLength": 100}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "pass"}}},
+      "then": {"properties": {"findings": {"maxItems": 0}}}
+    }
+  ]
+}

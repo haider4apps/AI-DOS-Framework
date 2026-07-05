@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/documentation-delta.schema.json",
+  "title": "DocumentationDelta",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "doc_delta_id", "required", "documents"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "doc_delta_id": {"type": "string", "pattern": "^DOC-[0-9]{6}-[0-9]{2}$"},
+    "required": {"type": "boolean"},
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "change_type", "status"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1, "maxLength": 500},
+          "change_type": {"type": "string", "enum": ["create", "update", "delete"]},
+          "status": {"type": "string", "enum": ["done", "not_required", "pending"]}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"required": {"const": true}}},
+      "then": {"properties": {"documents": {"minItems": 1}}}
+    }
+  ]
+}

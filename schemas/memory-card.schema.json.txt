@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/memory-card.schema.json",
+  "title": "MemoryCard",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "memory_id", "title", "summary", "commit_shas", "tags", "created_at"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "memory_id": {"type": "string", "pattern": "^MEM-[0-9]{6}-[0-9]{2}$"},
+    "title": {"type": "string", "minLength": 3, "maxLength": 200},
+    "summary": {"type": "string", "minLength": 3, "maxLength": 2000},
+    "commit_shas": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 6, "maxLength": 64}, "uniqueItems": true},
+    "tags": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1, "maxLength": 50}, "uniqueItems": true},
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

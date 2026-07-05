@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/task-manifest.schema.json",
+  "title": "TaskManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "title",
+    "summary",
+    "requested_by",
+    "created_at",
+    "current_state",
+    "priority",
+    "task_type",
+    "risk_tier",
+    "risk_score",
+    "requires_approval",
+    "project_id",
+    "owner_agent",
+    "scope",
+    "change_surface"
+  ],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "title": {"type": "string", "minLength": 3, "maxLength": 200},
+    "summary": {"type": "string", "minLength": 3, "maxLength": 2000},
+    "requested_by": {"type": "string", "minLength": 1, "maxLength": 100},
+    "created_at": {"type": "string", "format": "date-time"},
+    "current_state": {
+      "type": "string",
+      "enum": ["DRAFT","CLASSIFIED","CONTEXT_PENDING","CONTEXT_RESOLVED","CONTEXT_CONFLICT","PLAN_PENDING","PLAN_READY","APPROVAL_REQUIRED","APPROVED","LOCK_PENDING","LOCKED","IMPLEMENTING","IMPLEMENTATION_BLOCKED","REVIEW_PENDING","REVIEW_FAILED","SECURITY_PENDING","SECURITY_FAILED","TEST_PENDING","TEST_FAILED","QC_PENDING","QC_FAILED","READY_TO_MERGE","MERGING","MERGED","DOCS_PENDING","MEMORY_PENDING","RELEASE_PENDING","COMPLETED","REJECTED","ROLLBACK_PENDING","ROLLED_BACK","QUARANTINED","ABORTED"]
+    },
+    "priority": {"type": "string", "enum": ["low", "medium", "high", "urgent"]},
+    "task_type": {"type": "string", "enum": ["bugfix", "feature", "refactor", "docs", "ops", "security", "research", "migration"]},
+    "risk_tier": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+    "risk_score": {"type": "integer", "minimum": 0, "maximum": 100},
+    "requires_approval": {"type": "boolean"},
+    "project_id": {"type": "string", "minLength": 1, "maxLength": 100},
+    "branch_name": {"type": ["string", "null"], "maxLength": 200},
+    "owner_agent": {"type": "string", "minLength": 1, "maxLength": 100},
+    "related_tasks": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+      "uniqueItems": true
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent", "in_scope", "out_of_scope"],
+      "properties": {
+        "intent": {"type": "string", "minLength": 3, "maxLength": 1000},
+        "in_scope": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "out_of_scope": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "change_surface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paths_declared", "external_side_effects"],
+      "properties": {
+        "paths_declared": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "external_side_effects": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["repo_only", "runtime_config_change", "db_migration", "infra_change", "third_party_side_effect"]},
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

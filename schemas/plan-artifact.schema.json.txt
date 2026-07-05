@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/plan-artifact.schema.json",
+  "title": "PlanArtifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "plan_id", "depends_on_context_bundle", "goal", "assumptions", "steps", "non_goals", "rollback_strategy", "plan_risks"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "plan_id": {"type": "string", "pattern": "^PLAN-[0-9]{6}-[0-9]{2}$"},
+    "depends_on_context_bundle": {"type": "string", "pattern": "^CTX-[0-9]{6}-[0-9]{2}$"},
+    "goal": {"type": "string", "minLength": 3, "maxLength": 1000},
+    "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["step_id", "action", "paths", "expected_output"],
+        "properties": {
+          "step_id": {"type": "string", "pattern": "^S[0-9]+$"},
+          "action": {"type": "string", "minLength": 3, "maxLength": 500},
+          "paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+          "expected_output": {"type": "string", "minLength": 3, "maxLength": 500}
+        }
+      }
+    },
+    "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "rollback_strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class", "reversible", "compensation_required"],
+      "properties": {
+        "class": {"type": "string", "enum": ["repo_only", "repo_plus_runtime_config", "repo_plus_db_forward_fix", "infra_compensation_required", "external_side_effects_required"]},
+        "reversible": {"type": "boolean"},
+        "compensation_required": {"type": "boolean"},
+        "notes": {"type": "string", "maxLength": 1000}
+      }
+    },
+    "plan_risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["risk_id", "description", "mitigation"],
+        "properties": {
+          "risk_id": {"type": "string", "pattern": "^R[0-9]+$"},
+          "description": {"type": "string", "minLength": 3, "maxLength": 1000},
+          "mitigation": {"type": "string", "minLength": 3, "maxLength": 1000}
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/test-execution-report.schema.json",
+  "title": "TestExecutionReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "run_id", "status", "summary", "suites"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "run_id": {"type": "string", "pattern": "^TEST-[0-9]{6}-[0-9]{2}$"},
+    "status": {"type": "string", "enum": ["pass", "fail"]},
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["passed", "failed", "skipped"],
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0}
+      }
+    },
+    "suites": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "kind", "status"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1, "maxLength": 200},
+          "kind": {"type": "string", "enum": ["unit", "integration", "e2e", "migration", "manual"]},
+          "status": {"type": "string", "enum": ["pass", "fail", "skipped"]},
+          "evidence_uri": {"type": ["string", "null"], "maxLength": 500}
+        }
+      }
+    }
+  }
+}

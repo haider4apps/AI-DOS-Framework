@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/execution-lease.schema.json",
+  "title": "ExecutionLease",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "lease_id", "branch_name", "locks", "issued_at", "expires_at", "renewable"],
+  "properties": {
+    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
+    "lease_id": {"type": "string", "pattern": "^LEASE-[0-9]{6}-[0-9]{2}$"},
+    "branch_name": {"type": "string", "minLength": 3, "maxLength": 200},
+    "locks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["target", "mode"],
+        "properties": {
+          "target": {"type": "string", "minLength": 1, "maxLength": 500},
+          "mode": {"type": "string", "enum": ["exclusive", "shared", "intent-to-merge"]}
+        }
+      }
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "renewable": {"type": "boolean"}
+  }
+}
