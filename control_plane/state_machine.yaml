@@ -23,11 +23,11 @@ states:
   - IDEA_DISCOVERY_PENDING
   - VISION_VERIFICATION_PENDING
   - BUSINESS_ANALYSIS_PENDING
+  - BUSINESS_ANALYSIS_REVIEW_PENDING
   - REQUIREMENTS_PENDING
+  - REQUIREMENTS_REVIEW_PENDING
   - TECH_FEASIBILITY_PENDING
-  - FEASIBILITY_PENDING
-  - FEASIBILITY_APPROVED
-  - FEASIBILITY_DEFERRED
+  - DEFERRED_BACKLOG
   - DRAFT
   - CLASSIFIED
   - CONTEXT_PENDING
@@ -136,6 +136,8 @@ transition_defaults:
   require_artifact_ids: true
 
 guards:
+  valid_codebase_assessment:
+    description: CodebaseAssessment exists and validates against schema
   valid_product_vision_packet:
     description: ProductVisionPacket exists and validates against schema
   vision_approved:
@@ -260,11 +262,11 @@ transitions:
     to: VISION_VERIFICATION_PENDING
 
   - from: REVERSE_ENGINEERING_PENDING
-    event: draft_vision
+    event: submit_assessment
     actor: orchestrator
-    required_artifacts: [ProductVisionPacket]
-    guards: [valid_product_vision_packet]
-    to: VISION_VERIFICATION_PENDING
+    required_artifacts: [CodebaseAssessment]
+    guards: [valid_codebase_assessment]
+    to: IDEA_DISCOVERY_PENDING
 
   - from: VISION_VERIFICATION_PENDING
     event: approve_vision
@@ -281,67 +283,67 @@ transitions:
     to: INTAKE_PENDING
 
   - from: BUSINESS_ANALYSIS_PENDING
+    event: submit_business_report
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report]
+    to: BUSINESS_ANALYSIS_REVIEW_PENDING
+
+  - from: BUSINESS_ANALYSIS_REVIEW_PENDING
     event: approve_business
-    actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport]
-    guards: [valid_business_feasibility_report, feasibility_go_or_conditional_go]
-    to: REQUIREMENTS_PENDING
-
-  - from: BUSINESS_ANALYSIS_PENDING
-    event: reject_business
-    actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport]
-    guards: [valid_business_feasibility_report, feasibility_no_go]
-    to: REJECTED
-
-  - from: REQUIREMENTS_PENDING
-    event: lock_requirements
-    actor: orchestrator
-    required_artifacts: [RequirementsDocument]
-    guards: [valid_requirements_document]
-    to: TECH_FEASIBILITY_PENDING
-
-  - from: TECH_FEASIBILITY_PENDING
-    event: lock_tech_feasibility
-    actor: orchestrator
-    required_artifacts: [TechnicalFeasibilityReport]
-    guards: [valid_tech_feasibility_report]
-    to: DRAFT
-
-  - from: FEASIBILITY_PENDING
-    event: approve_feasibility
-    actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport]
-    guards: [valid_business_feasibility_report, feasibility_go_or_conditional_go]
-    to: FEASIBILITY_APPROVED
-
-  - from: FEASIBILITY_PENDING
-    event: defer_feasibility
-    actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport]
-    guards: [valid_business_feasibility_report, feasibility_deferred]
-    to: FEASIBILITY_DEFERRED
-
-  - from: FEASIBILITY_PENDING
-    event: reject_feasibility
-    actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport]
-    guards: [valid_business_feasibility_report, feasibility_no_go]
-    to: REJECTED
-
-  - from: FEASIBILITY_DEFERRED
-    event: resume_feasibility
-    actor: orchestrator
+    actor: user
     required_artifacts: []
     guards: []
-    to: FEASIBILITY_PENDING
+    to: REQUIREMENTS_PENDING
 
-  - from: FEASIBILITY_APPROVED
-    event: admit_to_intake
+  - from: BUSINESS_ANALYSIS_REVIEW_PENDING
+    event: defer_business
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: DEFERRED_BACKLOG
+
+  - from: BUSINESS_ANALYSIS_REVIEW_PENDING
+    event: cancel_business
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: REJECTED
+
+  - from: DEFERRED_BACKLOG
+    event: resume_idea
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: REQUIREMENTS_PENDING
+
+  - from: REQUIREMENTS_PENDING
+    event: draft_requirements
     actor: orchestrator
-    required_artifacts: [BusinessFeasibilityReport, TaskManifest]
-    guards: [valid_business_feasibility_report, valid_task_manifest]
+    required_artifacts: [RequirementsDocument, TechnicalFeasibilityReport]
+    guards: [valid_requirements_document, valid_tech_feasibility_report]
+    to: REQUIREMENTS_REVIEW_PENDING
+
+  - from: REQUIREMENTS_REVIEW_PENDING
+    event: approve_requirements
+    actor: user
+    required_artifacts: [TaskManifest]
+    guards: [valid_task_manifest]
     to: DRAFT
+
+  - from: REQUIREMENTS_REVIEW_PENDING
+    event: revise_requirements
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: REQUIREMENTS_PENDING
+
+  - from: REQUIREMENTS_REVIEW_PENDING
+    event: reject_requirements
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: REJECTED
 
   - from: DRAFT
     event: classify_task
@@ -791,14 +793,7 @@ transitions:
     guards: [valid_rollback_validation]
     to: ROLLED_BACK
 
-  - from: FEASIBILITY_PENDING
-    event: abort
-    actor: orchestrator
-    required_artifacts: []
-    guards: []
-    to: ABORTED
-
-  - from: FEASIBILITY_DEFERRED
+  - from: DEFERRED_BACKLOG
     event: abort
     actor: orchestrator
     required_artifacts: []

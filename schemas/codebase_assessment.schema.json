@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.io/schemas/codebase_assessment.schema.json",
+  "title": "Codebase Assessment",
+  "description": "Artifact generated during REVERSE_ENGINEERING_PENDING that documents an existing, unfinished, or legacy codebase before drafting a product vision.",
+  "type": "object",
+  "properties": {
+    "detected_tech_stack": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Languages, frameworks, and libraries found in the source code."
+    },
+    "current_architecture": {
+      "type": "string",
+      "description": "A high-level summary of how the existing code is structured (e.g., MVC, monolithic, microservices)."
+    },
+    "broken_or_incomplete_areas": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Known bugs, missing features, or failing tests discovered during the scan."
+    },
+    "risk_hotspots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Areas of high technical debt, security vulnerabilities, or tight coupling."
+    }
+  },
+  "required": [
+    "detected_tech_stack",
+    "current_architecture",
+    "broken_or_incomplete_areas",
+    "risk_hotspots"
+  ],
+  "additionalProperties": false
+}

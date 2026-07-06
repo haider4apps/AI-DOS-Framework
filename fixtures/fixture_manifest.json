@@ -131,6 +131,12 @@
       "schema_file": "technical_feasibility_report.schema.json",
       "positive_fixture": "technical_feasibility_report.example.json",
       "negative_fixture": null
+    },
+    {
+      "artifact_name": "codebase_assessment",
+      "schema_file": "codebase_assessment.schema.json",
+      "positive_fixture": "codebase_assessment.example.json",
+      "negative_fixture": null
     }
   ],
   "ci_guidance": {
