@@ -1,11 +1,26 @@
 {
   "project_name": "AI-DOS",
   "core_concept": "An enterprise-grade autonomous software factory driven by an LLM-based orchestrator.",
+  "problem_statement": "Small teams lack the capacity to architect, build, and test enterprise-grade software safely.",
   "target_audience": "Solo developers and small engineering teams.",
+  "user_pain_points": [
+    "LLM hallucination causing infinite debugging loops.",
+    "Lack of structural boundaries leading to messy code architecture."
+  ],
+  "success_metrics": [
+    "Zero hallucinated JSON schemas.",
+    "Ability to complete a 5-day project fully autonomously."
+  ],
   "origin": "reverse_engineered_codebase",
   "key_differentiators": [
     "Strict state machine enforcement prevents AI hallucination",
     "JSON validation gate ensures structured artifact output",
     "13-agent lifecycle covering planning, coding, and QA"
+  ],
+  "key_assumptions": [
+    "The target user knows how to configure API keys."
+  ],
+  "scope_boundaries": [
+    "No graphical user interface (GUI) required for MVP."
   ]
 }

@@ -13,6 +13,22 @@
     "@google/generative-ai",
     "js-yaml"
   ],
+  "integration_constraints": [
+    "Gemini API rate limit: 15 RPM for free tier."
+  ],
+  "migration_risks": [
+    "Upgrading to AJV Draft 2020-12 might break older schemas."
+  ],
+  "environment_assumptions": [
+    "Windows OS with Node.js v20+ installed.",
+    "User has stable internet connection."
+  ],
+  "compliance_requirements": [
+    "No user PII should be sent to the public LLM API."
+  ],
+  "known_unknowns": [
+    "Will the LLM output conform perfectly to strict JSON 100% of the time without infinite retries?"
+  ],
   "technical_risks": [
     "LLM context window truncation during large code reviews",
     "Strict JSON schema failures causing infinite retry loops"

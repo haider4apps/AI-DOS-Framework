@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://ai-dos.io/schemas/technical_feasibility_report.schema.json",
   "title": "Technical Feasibility Report",
-  "description": "Estimation of time, tech stack, and technical blockers.",
+  "description": "Estimation of time, tech stack, constraints, and technical blockers.",
   "type": "object",
   "properties": {
     "recommended_tech_stack": {
@@ -23,15 +23,42 @@
       "items": { "type": "string" },
       "description": "Third-party APIs or libraries needed."
     },
+    "integration_constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Rate limits, strict API contracts, or hardware constraints."
+    },
+    "migration_risks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Risks associated with upgrading legacy code or migrating databases."
+    },
+    "environment_assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Assumed OS, memory availability, or cloud permissions."
+    },
+    "compliance_requirements": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Data privacy laws (GDPR/HIPAA), accessibility standards, or security mandates."
+    },
+    "known_unknowns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Areas of extreme uncertainty that could derail the timeline."
+    },
     "technical_risks": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Potential technical blockers or challenges."
+      "description": "General potential technical blockers or challenges."
     }
   },
   "required": [
     "recommended_tech_stack",
-    "estimated_effort"
+    "estimated_effort",
+    "integration_constraints",
+    "environment_assumptions"
   ],
   "additionalProperties": false
 }

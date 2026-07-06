@@ -13,9 +13,23 @@
       "type": "string",
       "description": "A high-level elevator pitch explaining what the product does."
     },
+    "problem_statement": {
+      "type": "string",
+      "description": "The exact problem this product solves for the target audience."
+    },
     "target_audience": {
       "type": "string",
       "description": "Who this product is being built for."
+    },
+    "user_pain_points": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Specific pain points the audience currently faces."
+    },
+    "success_metrics": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "KPIs or measurable outcomes that define success."
     },
     "origin": {
       "type": "string",
@@ -26,12 +40,24 @@
       "type": "array",
       "items": { "type": "string" },
       "description": "What makes this product unique compared to generic solutions."
+    },
+    "key_assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Market or technical assumptions being made early on."
+    },
+    "scope_boundaries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit out-of-scope declarations to prevent scope creep."
     }
   },
   "required": [
     "project_name",
     "core_concept",
+    "problem_statement",
     "target_audience",
+    "success_metrics",
     "origin"
   ],
   "additionalProperties": false
