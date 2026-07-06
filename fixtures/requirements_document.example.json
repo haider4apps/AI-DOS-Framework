@@ -1,0 +1,15 @@
+{
+  "must_haves": [
+    "Strict JSON schema validation for every LLM output",
+    "State machine to govern transition logic",
+    "Logging of all FSM events for auditability"
+  ],
+  "wont_haves": [
+    "A graphical user interface (GUI)",
+    "Support for XML or plain-text unstructured output from LLMs"
+  ],
+  "non_functional_requirements": [
+    "Must be able to run completely headlessly in the background",
+    "JSON validation must use Draft 2020-12 standard"
+  ]
+}

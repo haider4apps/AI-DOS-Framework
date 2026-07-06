@@ -1,0 +1,11 @@
+{
+  "project_name": "AI-DOS",
+  "core_concept": "An enterprise-grade autonomous software factory driven by an LLM-based orchestrator.",
+  "target_audience": "Solo developers and small engineering teams.",
+  "origin": "reverse_engineered_codebase",
+  "key_differentiators": [
+    "Strict state machine enforcement prevents AI hallucination",
+    "JSON validation gate ensures structured artifact output",
+    "13-agent lifecycle covering planning, coding, and QA"
+  ]
+}

@@ -113,6 +113,24 @@
       "schema_file": "rollback_validation_report.schema.json",
       "positive_fixture": "rollback_validation_report.example.json",
       "negative_fixture": "rollback_validation_report.negative.json"
+    },
+    {
+      "artifact_name": "product_vision_packet",
+      "schema_file": "product_vision_packet.schema.json",
+      "positive_fixture": "product_vision_packet.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "requirements_document",
+      "schema_file": "requirements_document.schema.json",
+      "positive_fixture": "requirements_document.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "technical_feasibility_report",
+      "schema_file": "technical_feasibility_report.schema.json",
+      "positive_fixture": "technical_feasibility_report.example.json",
+      "negative_fixture": null
     }
   ],
   "ci_guidance": {

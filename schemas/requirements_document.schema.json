@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.io/schemas/requirements_document.schema.json",
+  "title": "Requirements Document",
+  "description": "Strict boundaries set based on the approved Business Feasibility. Specifies Dos, Don'ts, and Core Features.",
+  "type": "object",
+  "properties": {
+    "must_haves": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The 'Dos': Core features that must be built for MVP."
+    },
+    "wont_haves": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The 'Don'ts': Anti-goals or features to strictly avoid to prevent scope creep."
+    },
+    "non_functional_requirements": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Performance, security, or compliance constraints."
+    }
+  },
+  "required": [
+    "must_haves",
+    "wont_haves"
+  ],
+  "additionalProperties": false
+}

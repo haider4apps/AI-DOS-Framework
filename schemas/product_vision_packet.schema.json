@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.io/schemas/product_vision_packet.schema.json",
+  "title": "Product Vision Packet",
+  "description": "Initial raw concept and brainstorming consensus locked after Discovery or Reverse Engineering.",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string",
+      "description": "The working title of the project."
+    },
+    "core_concept": {
+      "type": "string",
+      "description": "A high-level elevator pitch explaining what the product does."
+    },
+    "target_audience": {
+      "type": "string",
+      "description": "Who this product is being built for."
+    },
+    "origin": {
+      "type": "string",
+      "enum": ["new_idea", "reverse_engineered_codebase"],
+      "description": "Whether this vision was born from a prompt or scanned from local code."
+    },
+    "key_differentiators": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "What makes this product unique compared to generic solutions."
+    }
+  },
+  "required": [
+    "project_name",
+    "core_concept",
+    "target_audience",
+    "origin"
+  ],
+  "additionalProperties": false
+}

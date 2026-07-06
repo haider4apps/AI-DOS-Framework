@@ -1,7 +1,7 @@
 version: 1
 name: ai_dos_control_plane
 spec_version: 2026-07-06
-initial_state: FEASIBILITY_PENDING
+initial_state: INTAKE_PENDING
 
 metadata:
   description: Executable state machine for the AI-DOS 4.0 enterprise control plane
@@ -18,6 +18,13 @@ terminal_states:
   - QUARANTINED
 
 states:
+  - INTAKE_PENDING
+  - REVERSE_ENGINEERING_PENDING
+  - IDEA_DISCOVERY_PENDING
+  - VISION_VERIFICATION_PENDING
+  - BUSINESS_ANALYSIS_PENDING
+  - REQUIREMENTS_PENDING
+  - TECH_FEASIBILITY_PENDING
   - FEASIBILITY_PENDING
   - FEASIBILITY_APPROVED
   - FEASIBILITY_DEFERRED
@@ -129,6 +136,16 @@ transition_defaults:
   require_artifact_ids: true
 
 guards:
+  valid_product_vision_packet:
+    description: ProductVisionPacket exists and validates against schema
+  vision_approved:
+    description: User approved the ProductVisionPacket
+  vision_rejected:
+    description: User rejected the ProductVisionPacket
+  valid_requirements_document:
+    description: RequirementsDocument exists and validates against schema
+  valid_tech_feasibility_report:
+    description: TechnicalFeasibilityReport exists and validates against schema
   valid_business_feasibility_report:
     description: BusinessFeasibilityReport exists and validates against schema
   feasibility_go_or_conditional_go:
@@ -221,6 +238,76 @@ guards:
     description: RollbackValidationReport exists and confirms the system is safely restored
 
 transitions:
+  - from: INTAKE_PENDING
+    event: start_new_idea
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: IDEA_DISCOVERY_PENDING
+
+  - from: INTAKE_PENDING
+    event: start_reverse_engineering
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: REVERSE_ENGINEERING_PENDING
+
+  - from: IDEA_DISCOVERY_PENDING
+    event: draft_vision
+    actor: orchestrator
+    required_artifacts: [ProductVisionPacket]
+    guards: [valid_product_vision_packet]
+    to: VISION_VERIFICATION_PENDING
+
+  - from: REVERSE_ENGINEERING_PENDING
+    event: draft_vision
+    actor: orchestrator
+    required_artifacts: [ProductVisionPacket]
+    guards: [valid_product_vision_packet]
+    to: VISION_VERIFICATION_PENDING
+
+  - from: VISION_VERIFICATION_PENDING
+    event: approve_vision
+    actor: orchestrator
+    required_artifacts: []
+    guards: [vision_approved]
+    to: BUSINESS_ANALYSIS_PENDING
+
+  - from: VISION_VERIFICATION_PENDING
+    event: reject_vision
+    actor: orchestrator
+    required_artifacts: []
+    guards: [vision_rejected]
+    to: INTAKE_PENDING
+
+  - from: BUSINESS_ANALYSIS_PENDING
+    event: approve_business
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report, feasibility_go_or_conditional_go]
+    to: REQUIREMENTS_PENDING
+
+  - from: BUSINESS_ANALYSIS_PENDING
+    event: reject_business
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report, feasibility_no_go]
+    to: REJECTED
+
+  - from: REQUIREMENTS_PENDING
+    event: lock_requirements
+    actor: orchestrator
+    required_artifacts: [RequirementsDocument]
+    guards: [valid_requirements_document]
+    to: TECH_FEASIBILITY_PENDING
+
+  - from: TECH_FEASIBILITY_PENDING
+    event: lock_tech_feasibility
+    actor: orchestrator
+    required_artifacts: [TechnicalFeasibilityReport]
+    guards: [valid_tech_feasibility_report]
+    to: DRAFT
+
   - from: FEASIBILITY_PENDING
     event: approve_feasibility
     actor: orchestrator
