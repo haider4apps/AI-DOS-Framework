@@ -1,0 +1,45 @@
+version: 1
+name: ai_dos_tool_registry
+spec_version: 2026-07-06
+policy:
+  tools_are_model_agnostic: true
+  invocation_authority: orchestrator
+  audit_all_calls: true
+  deny_undeclared_tools: true
+
+tools:
+  - tool_id: git
+    category: source_control
+    capabilities: [status, diff, branch, checkout, commit, merge, rebase, tag, rollback]
+    risk_controls:
+      requires_audit_log: true
+      requires_repo_scope: true
+      requires_clean_intent: true
+      destructive_operations_require_approval: true
+
+  - tool_id: filesystem
+    category: workspace_io
+    capabilities: [read, write, patch, move, delete, list]
+    risk_controls:
+      requires_audit_log: true
+      path_scope_enforced: true
+      overwrite_policy_controlled: true
+      delete_requires_explicit_intent: true
+
+  - tool_id: terminal
+    category: execution_runtime
+    capabilities: [run_command, run_tests, lint, build, scan, inspect_environment]
+    risk_controls:
+      requires_audit_log: true
+      command_allowlist_or_policy: true
+      network_policy_enforced: true
+      long_running_process_timeout: true
+
+binding_rules:
+  implementer: [filesystem, git, terminal]
+  reviewer: [filesystem, git]
+  security_analyst: [filesystem, terminal]
+  test_engineer: [filesystem, terminal]
+  docs_curator: [filesystem, git]
+  memory_curator: [filesystem]
+  orchestrator: [filesystem, git, terminal]

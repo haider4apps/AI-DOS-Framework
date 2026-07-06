@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "fixture_manifest",
+  "manifest_id": "FIXTURE-MANIFEST-2026-07-06-001",
+  "created_at": "2026-07-06T12:45:00Z",
+  "created_by": "orchestrator",
+  "description": "Index of AI-DOS schema fixtures for CI auto-discovery. Each entry maps a canonical schema to its positive example fixture and, where available, its negative validation fixture.",
+  "entries": [
+    {
+      "artifact_name": "task_intake",
+      "schema_file": null,
+      "positive_fixture": "task_intake.example.json",
+      "negative_fixture": "task_intake.negative.json"
+    },
+    {
+      "artifact_name": "task_brief",
+      "schema_file": null,
+      "positive_fixture": "task_brief.example.json",
+      "negative_fixture": "task_brief.negative.json"
+    },
+    {
+      "artifact_name": "execution_plan",
+      "schema_file": null,
+      "positive_fixture": "execution_plan.example.json",
+      "negative_fixture": "execution_plan.negative.json"
+    },
+    {
+      "artifact_name": "agent_assignment",
+      "schema_file": null,
+      "positive_fixture": "agent_assignment.example.json",
+      "negative_fixture": "agent_assignment.negative.json"
+    },
+    {
+      "artifact_name": "work_order",
+      "schema_file": null,
+      "positive_fixture": "work_order.example.json",
+      "negative_fixture": "work_order.negative.json"
+    },
+    {
+      "artifact_name": "artifact_manifest",
+      "schema_file": null,
+      "positive_fixture": "artifact_manifest.example.json",
+      "negative_fixture": "artifact_manifest.negative.json"
+    },
+    {
+      "artifact_name": "tool_invocation_record",
+      "schema_file": null,
+      "positive_fixture": "tool_invocation_record.example.json",
+      "negative_fixture": "tool_invocation_record.negative.json"
+    },
+    {
+      "artifact_name": "checkpoint_review",
+      "schema_file": null,
+      "positive_fixture": "checkpoint_review.example.json",
+      "negative_fixture": "checkpoint_review.negative.json"
+    },
+    {
+      "artifact_name": "issue_report",
+      "schema_file": null,
+      "positive_fixture": "issue_report.example.json",
+      "negative_fixture": "issue_report.negative.json"
+    },
+    {
+      "artifact_name": "handoff_packet",
+      "schema_file": null,
+      "positive_fixture": "handoff_packet.example.json",
+      "negative_fixture": "handoff_packet.negative.json"
+    },
+    {
+      "artifact_name": "completion_report",
+      "schema_file": null,
+      "positive_fixture": "completion_report.example.json",
+      "negative_fixture": "completion_report.negative.json"
+    },
+    {
+      "artifact_name": "business_feasibility_report",
+      "schema_file": "business_feasibility_report.schema.json",
+      "positive_fixture": "business_feasibility_report.example.json",
+      "negative_fixture": "business_feasibility_report.negative.json"
+    },
+    {
+      "artifact_name": "market_scan",
+      "schema_file": "market_scan.schema.json",
+      "positive_fixture": "market_scan.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "competitor_map",
+      "schema_file": "competitor_map.schema.json",
+      "positive_fixture": "competitor_map.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "uvp_canvas",
+      "schema_file": "uvp_canvas.schema.json",
+      "positive_fixture": "uvp_canvas.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "compressed_context",
+      "schema_file": "compressed_context.schema.json",
+      "positive_fixture": "compressed_context.example.json",
+      "negative_fixture": null
+    },
+    {
+      "artifact_name": "agent_failure_record",
+      "schema_file": "agent_failure_record.schema.json",
+      "positive_fixture": "agent_failure_record.example.json",
+      "negative_fixture": "agent_failure_record.negative.json"
+    },
+    {
+      "artifact_name": "rollback_validation_report",
+      "schema_file": "rollback_validation_report.schema.json",
+      "positive_fixture": "rollback_validation_report.example.json",
+      "negative_fixture": "rollback_validation_report.negative.json"
+    }
+  ],
+  "ci_guidance": {
+    "validation_rule": "Each positive_fixture should validate against schema_file when present; each negative_fixture should fail validation against schema_file when present.",
+    "null_schema_interpretation": "A null schema_file indicates the fixture exists but the canonical schema file was not generated in this package and should be supplied by the local repository.",
+    "null_negative_fixture_interpretation": "A null negative_fixture indicates negative coverage has not yet been generated for that artifact."
+  }
+}

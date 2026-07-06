@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "rollback_validation_report",
+  "report_id": "RVR-2026-07-06-001",
+  "created_at": "2026-07-06T12:20:00Z",
+  "created_by": "qc_governor",
+  "task_id": "TASK-2026-07-06-001",
+  "rollback_ref": "RB-2026-07-06-001",
+  "validated_target_state": "Known-good pre-change deployment baseline restored",
+  "validation_checks": [
+    {
+      "check_name": "Deployment state restored",
+      "result": "pass",
+      "evidence": "Active release hash matches the recorded rollback target.",
+      "severity": "high"
+    },
+    {
+      "check_name": "Critical smoke tests",
+      "result": "pass",
+      "evidence": "Post-rollback smoke suite completed successfully across core endpoints.",
+      "severity": "high"
+    },
+    {
+      "check_name": "Audit trail completeness",
+      "result": "warning",
+      "evidence": "One non-blocking operator note was appended after rollback execution but before validation closeout.",
+      "severity": "low"
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk": "Minor user-facing cache inconsistency may persist briefly after rollback.",
+      "severity": "low",
+      "mitigation": "Expire edge caches and monitor request behavior for 15 minutes."
+    }
+  ],
+  "overall_status": "pass",
+  "safe_to_close": true,
+  "follow_up_actions": [
+    "Monitor production telemetry for 30 minutes",
+    "Open a postmortem task for root-cause analysis"
+  ],
+  "notes": "Rollback target is confirmed stable and the task may transition to ROLLED_BACK."
+}

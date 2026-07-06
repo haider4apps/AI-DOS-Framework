@@ -1,0 +1,768 @@
+version: 1
+name: ai_dos_control_plane
+spec_version: 2026-07-06
+initial_state: FEASIBILITY_PENDING
+
+metadata:
+  description: Executable state machine for the AI-DOS 4.0 enterprise control plane
+  orchestrator_rule: Only the orchestrator may mutate task state
+  approval_scope_binding: true
+  artifact_validation_required: true
+  audit_log_required: true
+
+terminal_states:
+  - COMPLETED
+  - REJECTED
+  - ROLLED_BACK
+  - ABORTED
+  - QUARANTINED
+
+states:
+  - FEASIBILITY_PENDING
+  - FEASIBILITY_APPROVED
+  - FEASIBILITY_DEFERRED
+  - DRAFT
+  - CLASSIFIED
+  - CONTEXT_PENDING
+  - CONTEXT_COMPRESSION
+  - CONTEXT_RESOLVED
+  - CONTEXT_CONFLICT
+  - PLAN_PENDING
+  - PLAN_READY
+  - APPROVAL_REQUIRED
+  - APPROVED
+  - LOCK_PENDING
+  - LOCKED
+  - IMPLEMENTING
+  - IMPLEMENTATION_BLOCKED
+  - AGENT_FAILURE
+  - REVIEW_PENDING
+  - REVIEW_FAILED
+  - SECURITY_PENDING
+  - SECURITY_FAILED
+  - TEST_PENDING
+  - TEST_FAILED
+  - QC_PENDING
+  - QC_FAILED
+  - READY_TO_MERGE
+  - MERGING
+  - MERGED
+  - DOCS_PENDING
+  - MEMORY_PENDING
+  - RELEASE_PENDING
+  - ROLLBACK_PENDING
+  - ROLLBACK_VALIDATION
+  - COMPLETED
+  - REJECTED
+  - ROLLED_BACK
+  - QUARANTINED
+  - ABORTED
+
+invariants:
+  single_current_state: true
+  valid_artifact_schema_required: true
+  business_feasibility_required_before_draft: true
+  only_approved_feasibility_may_enter_draft: true
+  context_must_be_compressed_before_planning: true
+  active_lease_required_for_implementation: true
+  rollback_must_validate_before_terminal: true
+  agent_failure_requires_record: true
+  fast_mode_only_for_low_risk: true
+  medium_or_higher_requires_approval: true
+  enterprise_mode_requires_human_approval: true
+  context_conflict_blocks_planning: true
+  retry_budget_enforced_per_defect_family: true
+  approval_expires_on_scope_hash_change: true
+
+risk_tiers:
+  - low
+  - medium
+  - high
+  - critical
+
+execution_modes:
+  FAST_MODE:
+    risk_tiers: [low]
+    planner_required: false
+    security_required: false
+    qc_required: false
+    path: [CONTEXT_RESOLVED, LOCK_PENDING, LOCKED, IMPLEMENTING, MERGING, MERGED]
+  NORMAL_MODE:
+    risk_tiers: [medium]
+    planner_required: true
+    security_required: true
+    qc_required: true
+    human_approval_required: true
+    path: [CONTEXT_RESOLVED, PLAN_READY, APPROVAL_REQUIRED, APPROVED, LOCKED, IMPLEMENTING, REVIEW_PENDING, SECURITY_PENDING, TEST_PENDING, QC_PENDING, READY_TO_MERGE, MERGING, MERGED]
+  ENTERPRISE_MODE:
+    risk_tiers: [high, critical]
+    planner_required: true
+    security_required: true
+    qc_required: true
+    human_approval_required: true
+    rollback_validation_required: true
+    path: [CONTEXT_RESOLVED, PLAN_READY, APPROVAL_REQUIRED, APPROVED, LOCKED, IMPLEMENTING, REVIEW_PENDING, SECURITY_PENDING, TEST_PENDING, QC_PENDING, READY_TO_MERGE, MERGING, MERGED]
+
+retry_policy:
+  low:
+    max_retries_per_defect: 2
+    max_agent_failures: 2
+    on_exhaust: QUARANTINED
+  medium:
+    max_retries_per_defect: 2
+    max_agent_failures: 2
+    on_exhaust: QUARANTINED
+  high:
+    max_retries_per_defect: 1
+    max_agent_failures: 1
+    on_exhaust: QUARANTINED
+  critical:
+    max_retries_per_defect: 0
+    max_agent_failures: 0
+    on_exhaust: QUARANTINED
+
+transition_defaults:
+  require_audit_log: true
+  require_actor: true
+  require_timestamp: true
+  require_triggering_event: true
+  require_artifact_ids: true
+
+guards:
+  valid_business_feasibility_report:
+    description: BusinessFeasibilityReport exists and validates against schema
+  feasibility_go_or_conditional_go:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is go or conditional_go
+  feasibility_deferred:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is defer
+  feasibility_no_go:
+    description: BusinessFeasibilityReport recommendation.decision_outcome is no_go
+  valid_task_manifest:
+    description: TaskManifest exists and validates against schema
+  valid_classification_report:
+    description: ClassificationReport exists and validates against schema
+  valid_context_bundle_resolved:
+    description: ContextBundle exists with status=resolved and no blocking contradictions
+  valid_context_bundle_conflict:
+    description: ContextBundle exists with status=conflict
+  contradiction_set_closed:
+    description: All contradictions are resolved and recorded
+  valid_compressed_context:
+    description: CompressedContext exists, validates, and is ready_for_planning=true
+  fast_mode:
+    description: Task risk tier is low
+  normal_mode:
+    description: Task risk tier is medium
+  enterprise_mode:
+    description: Task risk tier is high or critical
+  valid_plan_artifact:
+    description: PlanArtifact exists, validates, and is within current scope
+  approval_required:
+    description: Task risk tier is medium, high, or critical
+  valid_approval_record:
+    description: ApprovalRecord exists, validates, and approved_scope_hash matches current scope
+  no_conflicting_lease:
+    description: No overlapping exclusive lease exists on requested lock targets
+  active_execution_lease:
+    description: ExecutionLease exists, is unexpired, and covers declared change surface
+  valid_implementation_report:
+    description: ImplementationReport exists and matches plan and lease constraints
+  retry_budget_available:
+    description: Remaining retries for this defect family are greater than zero
+  agent_failure_retry_available:
+    description: Remaining retries for agent failure are greater than zero
+  valid_agent_failure_record:
+    description: AgentFailureRecord exists, validates, and identifies the failed stage and retryability
+  resume_to_context_pending:
+    description: AgentFailureRecord.resume_state equals CONTEXT_PENDING
+  resume_to_context_compression:
+    description: AgentFailureRecord.resume_state equals CONTEXT_COMPRESSION
+  resume_to_plan_ready:
+    description: AgentFailureRecord.resume_state equals PLAN_READY
+  resume_to_implementing:
+    description: AgentFailureRecord.resume_state equals IMPLEMENTING
+  resume_to_review_pending:
+    description: AgentFailureRecord.resume_state equals REVIEW_PENDING
+  resume_to_security_pending:
+    description: AgentFailureRecord.resume_state equals SECURITY_PENDING
+  resume_to_test_pending:
+    description: AgentFailureRecord.resume_state equals TEST_PENDING
+  resume_to_qc_pending:
+    description: AgentFailureRecord.resume_state equals QC_PENDING
+  resume_to_merging:
+    description: AgentFailureRecord.resume_state equals MERGING
+  review_pass:
+    description: Review stage completed with no unresolved failing findings
+  security_pass:
+    description: Security stage completed with no unresolved failing findings
+  tests_pass:
+    description: TestExecutionReport exists with status=pass
+  valid_qc_pass:
+    description: QcDecision exists with decision=pass and all required prior artifacts present
+  approval_still_valid:
+    description: ApprovalRecord is not expired and scope hash remains unchanged
+  branch_up_to_date:
+    description: Sandbox branch is rebased or merged with latest base and validation still passes
+  valid_merge_record:
+    description: Merge completed successfully and merge metadata was recorded
+  valid_docs_delta:
+    description: DocumentationDelta exists and validates against policy
+  valid_memory_card:
+    description: MemoryCard exists and references actual merged commits
+  release_conditions_met:
+    description: All release policies for this task tier are satisfied
+  implementation_blocked:
+    description: Dependency, lease, tool, or conflict issue blocks progress
+  requires_docs:
+    description: Docs sync is required for merged tasks
+  valid_rollback_record:
+    description: RollbackRecord exists and identifies rollback target, scope, and completion status
+  valid_rollback_validation:
+    description: RollbackValidationReport exists and confirms the system is safely restored
+
+transitions:
+  - from: FEASIBILITY_PENDING
+    event: approve_feasibility
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report, feasibility_go_or_conditional_go]
+    to: FEASIBILITY_APPROVED
+
+  - from: FEASIBILITY_PENDING
+    event: defer_feasibility
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report, feasibility_deferred]
+    to: FEASIBILITY_DEFERRED
+
+  - from: FEASIBILITY_PENDING
+    event: reject_feasibility
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport]
+    guards: [valid_business_feasibility_report, feasibility_no_go]
+    to: REJECTED
+
+  - from: FEASIBILITY_DEFERRED
+    event: resume_feasibility
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: FEASIBILITY_PENDING
+
+  - from: FEASIBILITY_APPROVED
+    event: admit_to_intake
+    actor: orchestrator
+    required_artifacts: [BusinessFeasibilityReport, TaskManifest]
+    guards: [valid_business_feasibility_report, valid_task_manifest]
+    to: DRAFT
+
+  - from: DRAFT
+    event: classify_task
+    actor: orchestrator
+    required_artifacts: [TaskManifest, ClassificationReport]
+    guards: [valid_task_manifest, valid_classification_report]
+    to: CLASSIFIED
+
+  - from: CLASSIFIED
+    event: request_context
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: CONTEXT_PENDING
+
+  - from: CONTEXT_PENDING
+    event: context_ready_for_compression
+    actor: orchestrator
+    required_artifacts: [ContextBundle]
+    guards: [valid_context_bundle_resolved]
+    to: CONTEXT_COMPRESSION
+
+  - from: CONTEXT_PENDING
+    event: context_conflict_found
+    actor: orchestrator
+    required_artifacts: [ContextBundle]
+    guards: [valid_context_bundle_conflict]
+    to: CONTEXT_CONFLICT
+
+  - from: CONTEXT_CONFLICT
+    event: conflict_reconciled
+    actor: orchestrator
+    required_artifacts: [ContextBundle]
+    guards: [contradiction_set_closed, valid_context_bundle_resolved]
+    to: CONTEXT_COMPRESSION
+
+  - from: CONTEXT_COMPRESSION
+    event: compression_complete
+    actor: orchestrator
+    required_artifacts: [CompressedContext]
+    guards: [valid_compressed_context]
+    to: CONTEXT_RESOLVED
+
+  - from: CONTEXT_RESOLVED
+    event: route_fast_track
+    actor: orchestrator
+    required_artifacts: [CompressedContext]
+    guards: [fast_mode, valid_compressed_context]
+    to: LOCK_PENDING
+
+  - from: CONTEXT_RESOLVED
+    event: submit_plan
+    actor: orchestrator
+    required_artifacts: [PlanArtifact, CompressedContext]
+    guards: [valid_plan_artifact, valid_compressed_context]
+    to: PLAN_READY
+
+  - from: PLAN_READY
+    event: route_for_normal_approval
+    actor: orchestrator
+    required_artifacts: []
+    guards: [normal_mode, approval_required]
+    to: APPROVAL_REQUIRED
+
+  - from: PLAN_READY
+    event: route_for_enterprise_approval
+    actor: orchestrator
+    required_artifacts: []
+    guards: [enterprise_mode, approval_required]
+    to: APPROVAL_REQUIRED
+
+  - from: APPROVAL_REQUIRED
+    event: approve
+    actor: orchestrator
+    required_artifacts: [ApprovalRecord]
+    guards: [valid_approval_record]
+    to: APPROVED
+
+  - from: APPROVAL_REQUIRED
+    event: reject
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: REJECTED
+
+  - from: APPROVED
+    event: acquire_lock
+    actor: orchestrator
+    required_artifacts: [ExecutionLease]
+    guards: [no_conflicting_lease]
+    to: LOCKED
+
+  - from: LOCK_PENDING
+    event: acquire_lock
+    actor: orchestrator
+    required_artifacts: [ExecutionLease]
+    guards: [no_conflicting_lease]
+    to: LOCKED
+
+  - from: LOCKED
+    event: begin_implementation
+    actor: orchestrator
+    required_artifacts: [ExecutionLease]
+    guards: [active_execution_lease]
+    to: IMPLEMENTING
+
+  - from: IMPLEMENTING
+    event: implementation_blocked
+    actor: orchestrator
+    required_artifacts: []
+    guards: [implementation_blocked]
+    to: IMPLEMENTATION_BLOCKED
+
+  - from: IMPLEMENTATION_BLOCKED
+    event: unblock
+    actor: orchestrator
+    required_artifacts: [ExecutionLease]
+    guards: [active_execution_lease]
+    to: IMPLEMENTING
+
+  - from: IMPLEMENTING
+    event: fast_track_merge_start
+    actor: orchestrator
+    required_artifacts: [ImplementationReport, ExecutionLease]
+    guards: [fast_mode, valid_implementation_report, active_execution_lease, branch_up_to_date]
+    to: MERGING
+
+  - from: IMPLEMENTING
+    event: implementation_done
+    actor: orchestrator
+    required_artifacts: [ImplementationReport]
+    guards: [valid_implementation_report]
+    to: REVIEW_PENDING
+
+  - from: REVIEW_PENDING
+    event: review_pass
+    actor: orchestrator
+    required_artifacts: [FindingReport]
+    guards: [review_pass]
+    to: SECURITY_PENDING
+
+  - from: REVIEW_PENDING
+    event: review_fail
+    actor: orchestrator
+    required_artifacts: [FindingReport]
+    guards: []
+    to: REVIEW_FAILED
+
+  - from: REVIEW_FAILED
+    event: submit_fix
+    actor: orchestrator
+    required_artifacts: [ImplementationReport]
+    guards: [retry_budget_available, valid_implementation_report]
+    to: IMPLEMENTING
+
+  - from: SECURITY_PENDING
+    event: security_pass
+    actor: orchestrator
+    required_artifacts: [FindingReport]
+    guards: [security_pass]
+    to: TEST_PENDING
+
+  - from: SECURITY_PENDING
+    event: security_fail
+    actor: orchestrator
+    required_artifacts: [FindingReport]
+    guards: []
+    to: SECURITY_FAILED
+
+  - from: SECURITY_FAILED
+    event: submit_fix
+    actor: orchestrator
+    required_artifacts: [ImplementationReport]
+    guards: [retry_budget_available, valid_implementation_report]
+    to: IMPLEMENTING
+
+  - from: TEST_PENDING
+    event: tests_pass
+    actor: orchestrator
+    required_artifacts: [TestExecutionReport]
+    guards: [tests_pass]
+    to: QC_PENDING
+
+  - from: TEST_PENDING
+    event: tests_fail
+    actor: orchestrator
+    required_artifacts: [TestExecutionReport]
+    guards: []
+    to: TEST_FAILED
+
+  - from: TEST_FAILED
+    event: submit_fix
+    actor: orchestrator
+    required_artifacts: [ImplementationReport]
+    guards: [retry_budget_available, valid_implementation_report]
+    to: IMPLEMENTING
+
+  - from: QC_PENDING
+    event: qc_pass
+    actor: orchestrator
+    required_artifacts: [QcDecision]
+    guards: [valid_qc_pass]
+    to: READY_TO_MERGE
+
+  - from: QC_PENDING
+    event: qc_fail
+    actor: orchestrator
+    required_artifacts: [QcDecision]
+    guards: []
+    to: QC_FAILED
+
+  - from: QC_FAILED
+    event: submit_fix
+    actor: orchestrator
+    required_artifacts: [ImplementationReport]
+    guards: [retry_budget_available, valid_implementation_report]
+    to: IMPLEMENTING
+
+  - from: READY_TO_MERGE
+    event: merge_start
+    actor: orchestrator
+    required_artifacts: [QcDecision, ExecutionLease]
+    guards: [approval_still_valid, active_execution_lease, branch_up_to_date]
+    to: MERGING
+
+  - from: MERGING
+    event: merge_success
+    actor: orchestrator
+    required_artifacts: [MergeRecord]
+    guards: [valid_merge_record]
+    to: MERGED
+
+  - from: MERGING
+    event: merge_fail
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED
+
+  - from: MERGED
+    event: docs_required
+    actor: orchestrator
+    required_artifacts: []
+    guards: [requires_docs]
+    to: DOCS_PENDING
+
+  - from: DOCS_PENDING
+    event: docs_synced
+    actor: orchestrator
+    required_artifacts: [DocumentationDelta]
+    guards: [valid_docs_delta]
+    to: MEMORY_PENDING
+
+  - from: MEMORY_PENDING
+    event: memory_created
+    actor: orchestrator
+    required_artifacts: [MemoryCard]
+    guards: [valid_memory_card]
+    to: RELEASE_PENDING
+
+  - from: RELEASE_PENDING
+    event: release_complete
+    actor: orchestrator
+    required_artifacts: []
+    guards: [release_conditions_met]
+    to: COMPLETED
+
+  - from: CONTEXT_PENDING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: CONTEXT_COMPRESSION
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: PLAN_READY
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: IMPLEMENTING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: REVIEW_PENDING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: SECURITY_PENDING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: TEST_PENDING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: QC_PENDING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: MERGING
+    event: agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: AGENT_FAILURE
+
+  - from: AGENT_FAILURE
+    event: retry_context_pending
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_context_pending]
+    to: CONTEXT_PENDING
+
+  - from: AGENT_FAILURE
+    event: retry_context_compression
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_context_compression]
+    to: CONTEXT_COMPRESSION
+
+  - from: AGENT_FAILURE
+    event: retry_plan_ready
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_plan_ready]
+    to: PLAN_READY
+
+  - from: AGENT_FAILURE
+    event: retry_implementing
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_implementing]
+    to: IMPLEMENTING
+
+  - from: AGENT_FAILURE
+    event: retry_review_pending
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_review_pending]
+    to: REVIEW_PENDING
+
+  - from: AGENT_FAILURE
+    event: retry_security_pending
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_security_pending]
+    to: SECURITY_PENDING
+
+  - from: AGENT_FAILURE
+    event: retry_test_pending
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_test_pending]
+    to: TEST_PENDING
+
+  - from: AGENT_FAILURE
+    event: retry_qc_pending
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_qc_pending]
+    to: QC_PENDING
+
+  - from: AGENT_FAILURE
+    event: retry_merging
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record, agent_failure_retry_available, resume_to_merging]
+    to: MERGING
+
+  - from: AGENT_FAILURE
+    event: quarantine_on_agent_failure
+    actor: orchestrator
+    required_artifacts: [AgentFailureRecord]
+    guards: [valid_agent_failure_record]
+    to: QUARANTINED
+
+  - from: IMPLEMENTING
+    event: request_rollback
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ROLLBACK_PENDING
+
+  - from: REVIEW_FAILED
+    event: request_rollback
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ROLLBACK_PENDING
+
+  - from: SECURITY_FAILED
+    event: request_rollback
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ROLLBACK_PENDING
+
+  - from: TEST_FAILED
+    event: request_rollback
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ROLLBACK_PENDING
+
+  - from: QC_FAILED
+    event: request_rollback
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ROLLBACK_PENDING
+
+  - from: ROLLBACK_PENDING
+    event: rollback_complete
+    actor: orchestrator
+    required_artifacts: [RollbackRecord]
+    guards: [valid_rollback_record]
+    to: ROLLBACK_VALIDATION
+
+  - from: ROLLBACK_VALIDATION
+    event: rollback_validated
+    actor: orchestrator
+    required_artifacts: [RollbackValidationReport]
+    guards: [valid_rollback_validation]
+    to: ROLLED_BACK
+
+  - from: FEASIBILITY_PENDING
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
+
+  - from: FEASIBILITY_DEFERRED
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
+
+  - from: DRAFT
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
+
+  - from: CONTEXT_CONFLICT
+    event: abort
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: ABORTED
+
+  - from: IMPLEMENTATION_BLOCKED
+    event: quarantine
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED
+
+  - from: REVIEW_FAILED
+    event: quarantine
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED
+
+  - from: SECURITY_FAILED
+    event: quarantine
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED
+
+  - from: TEST_FAILED
+    event: quarantine
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED
+
+  - from: QC_FAILED
+    event: quarantine
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: QUARANTINED

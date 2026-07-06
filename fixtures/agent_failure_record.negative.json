@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.1.0",
+  "artifact_type": "agent_failure",
+  "failure_id": "",
+  "created_at": "not-a-timestamp",
+  "created_by": 7,
+  "task_id": "TASK-2026-07-06-001",
+  "agent_id": "implementer",
+  "failed_state": "IMPLEMENTATION_BLOCKED",
+  "resume_state": "SOMEWHERE_ELSE",
+  "failure_category": "throttle",
+  "failure_message": "bad",
+  "provider_details": {
+    "service_type": "x",
+    "status_code": 700
+  },
+  "retryable": "yes",
+  "retry_count": -1,
+  "max_retries": -5,
+  "recommended_disposition": "maybe",
+  "impacted_artifacts": "implementation_report"
+}

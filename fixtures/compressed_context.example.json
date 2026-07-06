@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "compressed_context",
+  "context_id": "CC-2026-07-06-001",
+  "task_id": "TASK-2026-07-06-001",
+  "created_at": "2026-07-06T11:30:00Z",
+  "created_by": "prompt_compiler",
+  "source_context_refs": [
+    "CTX-001",
+    "CTX-002",
+    "CTX-003"
+  ],
+  "objective_summary": "Design and implement the AI-DOS 4.0 enterprise control plane updates with execution modes, agent failure handling, rollback validation, and model-decoupled registries.",
+  "constraints": [
+    "Preserve the existing finite-state-machine structure",
+    "Use model-agnostic agent capabilities instead of vendor-specific model names",
+    "Add schema rigor for all newly introduced control-plane artifacts"
+  ],
+  "relevant_facts": [
+    {
+      "fact": "Low-risk tasks must be able to bypass planner-heavy and validation-heavy stages through FAST_MODE.",
+      "source_ref": "CTX-001",
+      "priority": "critical",
+      "category": "execution_mode"
+    },
+    {
+      "fact": "Agent execution failures such as timeouts, rate limits, and network errors require an explicit AGENT_FAILURE state.",
+      "source_ref": "CTX-002",
+      "priority": "high",
+      "category": "resilience"
+    },
+    {
+      "fact": "Rollback completion must be followed by validation before the task can enter the terminal ROLLED_BACK state.",
+      "source_ref": "CTX-003",
+      "priority": "high",
+      "category": "rollback_governance"
+    }
+  ],
+  "open_questions": [
+    "Should FAST_MODE still require documentation sync for certain low-risk change classes?",
+    "Should critical-risk rollback validation require human sign-off in addition to schema validation?"
+  ],
+  "contradictions": [
+    {
+      "issue": "Early drafts implied direct IMPLEMENTING to MERGED transitions, but auditability requirements imply MERGING should remain explicit.",
+      "status": "resolved",
+      "resolution_note": "Keep MERGING as an auditable operational step while still bypassing planner, security, and QC for FAST_MODE."
+    }
+  ],
+  "compression_metrics": {
+    "input_tokens": 12450,
+    "output_tokens": 1780,
+    "reduction_ratio": 0.143,
+    "target_budget_tokens": 2000
+  },
+  "prompt_payload": "Update the AI-DOS FSM while preserving its structure. Add explicit FAST_MODE for low-risk tasks with direct routing from CONTEXT_RESOLVED to LOCK_PENDING and then to IMPLEMENTING and MERGING. Add NORMAL_MODE and ENTERPRISE_MODE for higher-risk work. Add AGENT_FAILURE with retry or quarantine routing. Add ROLLBACK_VALIDATION before ROLLED_BACK. Add CONTEXT_COMPRESSION between CONTEXT_PENDING and CONTEXT_RESOLVED. Generate model-agnostic agent and tool registries and supply schema artifacts for all new states.",
+  "ready_for_planning": true
+}

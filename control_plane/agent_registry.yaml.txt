@@ -1,0 +1,127 @@
+version: 1
+name: ai_dos_agent_registry
+spec_version: 2026-07-06
+policy:
+  model_binding: decoupled
+  selection_rule: runtime may satisfy capability requirements with any compliant model or service
+  hardcoded_model_names_allowed: false
+  orchestrator_authority: only orchestrator may assign or reassign agent roles
+
+agents:
+  - agent_id: business_strategist
+    phase: phase_0
+    priority: 1
+    required_capabilities: [reasoning, market_research, competitor_analysis, pricing_strategy, synthesis]
+    preferred_tools: [web_research, documents]
+    primary_outputs: [market_scan, competitor_map, uvp_canvas, business_feasibility_report]
+
+  - agent_id: market_researcher
+    phase: phase_0
+    priority: 2
+    required_capabilities: [research, trend_analysis, summarization]
+    preferred_tools: [web_research, documents]
+    primary_outputs: [market_scan]
+
+  - agent_id: competitive_analyst
+    phase: phase_0
+    priority: 3
+    required_capabilities: [research, competitor_analysis, positioning]
+    preferred_tools: [web_research, documents]
+    primary_outputs: [competitor_map]
+
+  - agent_id: uvp_designer
+    phase: phase_0
+    priority: 4
+    required_capabilities: [reasoning, messaging, positioning, synthesis]
+    preferred_tools: [documents]
+    primary_outputs: [uvp_canvas]
+
+  - agent_id: orchestrator
+    phase: control_plane
+    priority: 1
+    required_capabilities: [workflow_control, policy_enforcement, state_management, auditability]
+    preferred_tools: [filesystem, git, terminal]
+    primary_outputs: [state_transition_record, lease_record, audit_log]
+
+  - agent_id: intake_normalizer
+    phase: intake
+    priority: 5
+    required_capabilities: [requirements_analysis, structuring, summarization]
+    preferred_tools: [documents]
+    primary_outputs: [task_intake, task_brief]
+
+  - agent_id: context_collector
+    phase: planning
+    priority: 6
+    required_capabilities: [retrieval, synthesis, contradiction_detection]
+    preferred_tools: [documents, filesystem]
+    primary_outputs: [context_bundle]
+
+  - agent_id: prompt_compiler
+    phase: planning
+    priority: 7
+    required_capabilities: [context_compression, summarization, prompt_design, token_budgeting]
+    preferred_tools: [documents, filesystem]
+    primary_outputs: [compressed_context]
+
+  - agent_id: planner_architect
+    phase: planning
+    priority: 8
+    required_capabilities: [reasoning, system_design, planning, dependency_analysis]
+    preferred_tools: [documents, filesystem]
+    primary_outputs: [plan_artifact, architecture_decision_record]
+
+  - agent_id: implementer
+    phase: execution
+    priority: 9
+    required_capabilities: [coding, refactoring, debugging, tool_use]
+    preferred_tools: [filesystem, git, terminal]
+    primary_outputs: [implementation_report, code_delta]
+
+  - agent_id: reviewer
+    phase: validation
+    priority: 10
+    required_capabilities: [code_review, reasoning, defect_detection]
+    preferred_tools: [filesystem, git]
+    primary_outputs: [finding_report]
+
+  - agent_id: security_analyst
+    phase: validation
+    priority: 11
+    required_capabilities: [security_review, threat_analysis, policy_checking]
+    preferred_tools: [filesystem, terminal]
+    primary_outputs: [finding_report]
+
+  - agent_id: test_engineer
+    phase: validation
+    priority: 12
+    required_capabilities: [test_design, execution_analysis, debugging]
+    preferred_tools: [filesystem, terminal]
+    primary_outputs: [test_execution_report]
+
+  - agent_id: qc_governor
+    phase: validation
+    priority: 13
+    required_capabilities: [quality_control, policy_enforcement, evidence_evaluation]
+    preferred_tools: [documents, filesystem]
+    primary_outputs: [qc_decision]
+
+  - agent_id: docs_curator
+    phase: release
+    priority: 14
+    required_capabilities: [technical_writing, summarization, change_documentation]
+    preferred_tools: [filesystem, git]
+    primary_outputs: [documentation_delta]
+
+  - agent_id: memory_curator
+    phase: release
+    priority: 15
+    required_capabilities: [summarization, knowledge_distillation, traceability]
+    preferred_tools: [filesystem, documents]
+    primary_outputs: [memory_card]
+
+assignment_rules:
+  low_risk_default_path: [intake_normalizer, context_collector, prompt_compiler, implementer]
+  medium_risk_default_path: [intake_normalizer, context_collector, prompt_compiler, planner_architect, implementer, reviewer, test_engineer, qc_governor]
+  high_risk_default_path: [intake_normalizer, context_collector, prompt_compiler, planner_architect, implementer, reviewer, security_analyst, test_engineer, qc_governor, docs_curator, memory_curator]
+  critical_risk_default_path: [business_strategist, intake_normalizer, context_collector, prompt_compiler, planner_architect, implementer, reviewer, security_analyst, test_engineer, qc_governor, docs_curator, memory_curator]

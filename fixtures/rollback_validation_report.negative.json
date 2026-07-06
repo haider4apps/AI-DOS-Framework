@@ -1,0 +1,23 @@
+{
+  "schema_version": "2.0.0",
+  "artifact_type": "rollback_validation",
+  "report_id": "",
+  "created_at": "tomorrow",
+  "created_by": false,
+  "task_id": "TASK-2026-07-06-001",
+  "rollback_ref": 123,
+  "validated_target_state": "",
+  "validation_checks": [
+    {
+      "check_name": "Restore complete",
+      "result": "ok",
+      "severity": "severe"
+    }
+  ],
+  "residual_risks": {
+    "risk": "Cache inconsistency"
+  },
+  "overall_status": "green",
+  "safe_to_close": "true",
+  "follow_up_actions": "Monitor system"
+}

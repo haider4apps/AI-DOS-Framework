@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.dev/schemas/agent_failure_record.schema.json",
+  "title": "Agent Failure Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "failure_id",
+    "created_at",
+    "created_by",
+    "task_id",
+    "agent_id",
+    "failed_state",
+    "resume_state",
+    "failure_category",
+    "failure_message",
+    "retryable",
+    "retry_count",
+    "max_retries",
+    "recommended_disposition"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0\\.0$"
+    },
+    "artifact_type": {
+      "const": "agent_failure_record"
+    },
+    "failure_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "created_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "failed_state": {
+      "type": "string",
+      "enum": [
+        "CONTEXT_PENDING",
+        "CONTEXT_COMPRESSION",
+        "PLAN_READY",
+        "IMPLEMENTING",
+        "REVIEW_PENDING",
+        "SECURITY_PENDING",
+        "TEST_PENDING",
+        "QC_PENDING",
+        "MERGING"
+      ]
+    },
+    "resume_state": {
+      "type": "string",
+      "enum": [
+        "CONTEXT_PENDING",
+        "CONTEXT_COMPRESSION",
+        "PLAN_READY",
+        "IMPLEMENTING",
+        "REVIEW_PENDING",
+        "SECURITY_PENDING",
+        "TEST_PENDING",
+        "QC_PENDING",
+        "MERGING"
+      ]
+    },
+    "failure_category": {
+      "type": "string",
+      "enum": [
+        "api_timeout",
+        "rate_limit",
+        "network_error",
+        "tool_crash",
+        "provider_unavailable",
+        "invalid_response",
+        "dependency_failure",
+        "unknown"
+      ]
+    },
+    "failure_message": {
+      "type": "string",
+      "minLength": 5
+    },
+    "provider_details": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "service_type": {
+          "type": "string",
+          "minLength": 2
+        },
+        "status_code": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        "request_id": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        }
+      }
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "retry_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_retries": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "recommended_disposition": {
+      "type": "string",
+      "enum": ["retry", "quarantine", "abort", "manual_review"]
+    },
+    "impacted_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

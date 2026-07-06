@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "agent_failure_record",
+  "failure_id": "AFR-2026-07-06-001",
+  "created_at": "2026-07-06T12:10:00Z",
+  "created_by": "orchestrator",
+  "task_id": "TASK-2026-07-06-001",
+  "agent_id": "implementer",
+  "failed_state": "IMPLEMENTING",
+  "resume_state": "IMPLEMENTING",
+  "failure_category": "rate_limit",
+  "failure_message": "Execution provider returned a rate limit response during implementation patch generation.",
+  "provider_details": {
+    "service_type": "llm_inference",
+    "status_code": 429,
+    "request_id": "req_7f2a9c11",
+    "region": "us-east-1"
+  },
+  "retryable": true,
+  "retry_count": 1,
+  "max_retries": 2,
+  "recommended_disposition": "retry",
+  "impacted_artifacts": [
+    "implementation_report",
+    "code_delta"
+  ],
+  "notes": "Retry is allowed because the failure is transient and retry budget remains available."
+}
