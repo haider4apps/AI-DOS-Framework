@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-dos.io/schemas/refactoring_plan.schema.json",
+  "title": "Refactoring Plan",
+  "description": "Lightweight artifact for REFACTORING tasks that skips Vision and Business Analysis. Used when the orchestrator classifies user intent as REFACTORING.",
+  "type": "object",
+  "properties": {
+    "refactoring_title": {
+      "type": "string",
+      "minLength": 5,
+      "description": "A short descriptive title for the refactoring work."
+    },
+    "motivation": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Why this refactoring is needed (e.g., technical debt, performance, maintainability)."
+    },
+    "current_state": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Description of the current code structure with specific file paths and line numbers."
+    },
+    "target_state": {
+      "type": "string",
+      "minLength": 20,
+      "description": "Description of the desired code structure after refactoring."
+    },
+    "affected_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["file_path", "change_description"],
+        "additionalProperties": false,
+        "properties": {
+          "file_path": {
+            "type": "string",
+            "description": "Relative path to the affected file."
+          },
+          "line_range": {
+            "type": "string",
+            "description": "Approximate line range to be refactored, e.g. 'L48-L52'."
+          },
+          "change_description": {
+            "type": "string",
+            "description": "What specific change is needed in this file."
+          }
+        }
+      },
+      "description": "List of files to be refactored with evidence-backed descriptions."
+    },
+    "scope_boundaries": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit out-of-scope declarations to prevent scope creep."
+    },
+    "breaking_changes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Any breaking changes that other parts of the system need to accommodate."
+    },
+    "verification_plan": {
+      "type": "string",
+      "description": "How the refactoring will be verified (e.g., run tests, manual check, build verification)."
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Risk assessment of the refactoring."
+    }
+  },
+  "required": [
+    "refactoring_title",
+    "motivation",
+    "current_state",
+    "target_state",
+    "affected_files",
+    "verification_plan",
+    "risk_level"
+  ],
+  "additionalProperties": false
+}

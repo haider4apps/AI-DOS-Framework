@@ -28,7 +28,9 @@ states:
   - REQUIREMENTS_REVIEW_PENDING
   - TECH_FEASIBILITY_PENDING
   - DEFERRED_BACKLOG
+  - MANUAL_OVERRIDE_PENDING
   - DRAFT
+  - DRAFT_VERIFICATION_PENDING
   - CLASSIFIED
   - CONTEXT_PENDING
   - CONTEXT_COMPRESSION
@@ -79,6 +81,8 @@ invariants:
   context_conflict_blocks_planning: true
   retry_budget_enforced_per_defect_family: true
   approval_expires_on_scope_hash_change: true
+  orchestrator_may_not_author_execution_artifacts: true
+  stage_artifacts_require_non_orchestrator_producer: true
 
 risk_tiers:
   - low
@@ -169,6 +173,8 @@ guards:
     description: CompressedContext exists, validates, and is ready_for_planning=true
   fast_mode:
     description: Task risk tier is low
+  task_is_bugfix_or_refactoring:
+    description: Orchestrator has classified user intent as BUGFIX or REFACTORING (not NEW_PRODUCT or FEATURE_REQUEST)
   normal_mode:
     description: Task risk tier is medium
   enterprise_mode:
@@ -237,6 +243,10 @@ guards:
     description: RollbackRecord exists and identifies rollback target, scope, and completion status
   valid_rollback_validation:
     description: RollbackValidationReport exists and confirms the system is safely restored
+  implementation_report_from_coder:
+    description: ImplementationReport produced_by matches 05_Coder
+  review_findings_from_reviewer:
+    description: FindingReport produced_by matches 06_Reviewer
 
 transitions:
   - from: INTAKE_PENDING
@@ -252,6 +262,59 @@ transitions:
     required_artifacts: []
     guards: []
     to: REVERSE_ENGINEERING_PENDING
+
+  - from: INTAKE_PENDING
+    event: request_manual_override
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: MANUAL_OVERRIDE_PENDING
+
+  - from: INTAKE_PENDING
+    event: start_maintenance_fix
+    actor: orchestrator
+    required_artifacts: []
+    guards: [task_is_bugfix_or_refactoring]
+    to: REQUIREMENTS_PENDING
+    description: >
+      Fast path for bugfixes and refactoring tasks. Skips Vision Verification
+      and Business Analysis phases entirely. Orchestrator must classify user
+      intent as BUGFIX or REFACTORING before using this transition.
+
+  - from: MANUAL_OVERRIDE_PENDING
+    event: override_to_draft
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: DRAFT
+
+  - from: MANUAL_OVERRIDE_PENDING
+    event: override_to_implementing
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: IMPLEMENTING
+
+  - from: MANUAL_OVERRIDE_PENDING
+    event: override_to_review
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: REVIEW_PENDING
+
+  - from: MANUAL_OVERRIDE_PENDING
+    event: override_to_qc
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: QC_PENDING
+
+  - from: MANUAL_OVERRIDE_PENDING
+    event: cancel_override
+    actor: user
+    required_artifacts: []
+    guards: []
+    to: INTAKE_PENDING
 
   - from: IDEA_DISCOVERY_PENDING
     event: draft_vision
@@ -345,11 +408,25 @@ transitions:
     to: REJECTED
 
   - from: DRAFT
-    event: classify_task
+    event: request_verification
     actor: orchestrator
-    required_artifacts: [TaskManifest, ClassificationReport]
-    guards: [valid_task_manifest, valid_classification_report]
+    required_artifacts: [TaskManifest]
+    guards: [valid_task_manifest]
+    to: DRAFT_VERIFICATION_PENDING
+
+  - from: DRAFT_VERIFICATION_PENDING
+    event: verification_pass
+    actor: orchestrator
+    required_artifacts: [FindingReport, ClassificationReport]
+    guards: [review_pass, valid_classification_report]
     to: CLASSIFIED
+
+  - from: DRAFT_VERIFICATION_PENDING
+    event: verification_fail
+    actor: orchestrator
+    required_artifacts: []
+    guards: []
+    to: DRAFT
 
   - from: CLASSIFIED
     event: request_context
@@ -474,14 +551,14 @@ transitions:
     event: implementation_done
     actor: orchestrator
     required_artifacts: [ImplementationReport]
-    guards: [valid_implementation_report]
+    guards: [valid_implementation_report, implementation_report_from_coder]
     to: REVIEW_PENDING
 
   - from: REVIEW_PENDING
     event: review_pass
     actor: orchestrator
     required_artifacts: [FindingReport]
-    guards: [review_pass]
+    guards: [review_pass, review_findings_from_reviewer]
     to: SECURITY_PENDING
 
   - from: REVIEW_PENDING

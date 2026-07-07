@@ -1,37 +1,161 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://ai-dos.dev/schemas/implementation-report.schema.json",
+  "$id": "schemas/implementation-report.schema.json",
   "title": "ImplementationReport",
   "type": "object",
   "additionalProperties": false,
-  "required": ["task_id", "commit_shas", "files_changed", "plan_step_status", "deviations", "scope_delta"],
+  "required": [
+    "artifact_type",
+    "schema_version",
+    "produced_by",
+    "request_id",
+    "state",
+    "status",
+    "summary",
+    "touched_files",
+    "diff_summary",
+    "handoff"
+  ],
   "properties": {
-    "task_id": {"type": "string", "pattern": "^TASK-[0-9]{4}-[0-9]{6}$"},
-    "commit_shas": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 6, "maxLength": 64}, "uniqueItems": true},
-    "files_changed": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
-    "plan_step_status": {
+    "artifact_type": {
+      "const": "ImplementationReport"
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "produced_by": {
+      "type": "string",
+      "const": "05_Coder"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state": {
+      "type": "string",
+      "const": "IMPLEMENTING"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["completed", "blocked", "no_changes"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "touched_files": {
       "type": "array",
-      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "diff_summary": {
+      "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["step_id", "status"],
+        "required": ["file", "change_type", "summary"],
         "properties": {
-          "step_id": {"type": "string", "pattern": "^S[0-9]+$"},
-          "status": {"type": "string", "enum": ["done", "partial", "blocked", "skipped"]},
-          "notes": {"type": "string", "maxLength": 1000}
+          "file": {
+            "type": "string",
+            "minLength": 1
+          },
+          "change_type": {
+            "type": "string",
+            "enum": ["create", "modify", "delete", "rename", "none"]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
-    "deviations": {"type": "array", "items": {"type": "string", "minLength": 1, "maxLength": 1000}},
-    "scope_delta": {
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": []
+    },
+    "no_op_reason": {
+      "type": "string"
+    },
+    "tests_recommended": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "default": []
+    },
+    "handoff": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["out_of_scope_changes_detected", "new_paths"],
+      "required": ["ready_for_review", "reviewer_focus"],
       "properties": {
-        "out_of_scope_changes_detected": {"type": "boolean"},
-        "new_paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+        "ready_for_review": {
+          "type": "boolean"
+        },
+        "reviewer_focus": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "completed" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "handoff": {
+            "properties": {
+              "ready_for_review": { "const": true }
+            },
+            "required": ["ready_for_review"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "blocked" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["blockers"],
+        "properties": {
+          "blockers": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "no_changes" }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["no_op_reason"]
+      }
+    }
+  ]
 }
